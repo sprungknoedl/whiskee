@@ -5,7 +5,6 @@ import (
 	"encoding/gob"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -29,16 +28,14 @@ func init() {
 
 func main() {
 	port := os.Getenv("PORT")
-	if port == "" {
-		log.Fatal("$PORT must be set.")
-	}
+	base := os.Getenv("BASE_URL")
 
 	cid := os.Getenv("GOOGLE_CID")
 	secret := os.Getenv("GOOGLE_SECRET")
 	sso = &oauth2.Config{
 		ClientID:     cid,
 		ClientSecret: secret,
-		RedirectURL:  "http://localhost:5000/auth/google/callback",
+		RedirectURL:  base + "/auth/google/callback",
 		Scopes:       []string{"openid", "email"},
 		Endpoint:     google.Endpoint,
 	}
