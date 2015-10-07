@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>whiskee</title>
+
+		<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+		<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+  </head>
+  <body>
+		<div class="container">
+    		<h1>Hello, world!</h1>
+
+				<div class="media">
+					<div class="media-left">
+						<img src="http://www.gravatar.com/avatar/{{ .user.Gravatar }}" />
+					</div>
+					<div class="media-body">
+						<h4>Hello, {{ .user.EMail }}</h4>
+						<p>You are one of our first users!</p>
+						<p><a href="/logout">Logout</a>
+					</div>
+				</div>
+		</div>
+
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  </body>
+</html>
