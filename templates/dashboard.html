@@ -10,19 +10,124 @@
 		<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
   </head>
   <body>
-		<div class="container">
-    		<h1>Hello, world!</h1>
-
-				<div class="media">
-					<div class="media-left">
-						<img src="http://www.gravatar.com/avatar/{{ .user.Gravatar }}" />
+		<div class="modal fade" id="add-whiskey">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						<h4 class="modal-title">Add Whiskey</h4>
 					</div>
-					<div class="media-body">
-						<h4>Hello, {{ .user.EMail }}</h4>
-						<p>You are one of our first users!</p>
-						<p><a href="/logout">Logout</a>
+					<form>
+						<div class="modal-body">
+							<div class="form-group">
+								<label for="exampleInputEmail1">Distillery</label>
+								<input type="text" class="form-control">
+							</div>
+							<div class="form-group">
+								<label for="exampleInputEmail1">Type</label>
+								<select class="form-control">
+									<option>Single Malt</option>
+									<option>Vatted Malt</option>
+									<option>Blended</option>
+									<option>Single Barrel</option>
+									<option>Cask Strength</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="exampleInputEmail1">Age</label>
+								<div class="input-group">
+									<input type="text" class="form-control">
+									<div class="input-group-addon">yr</div>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="exampleInputEmail1">ABV</label>
+								<div class="input-group">
+									<input type="text" class="form-control">
+									<div class="input-group-addon">%</div>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="exampleInputEmail1">Bottle Size</label>
+								<div class="input-group">
+									<input type="text" class="form-control">
+									<div class="input-group-addon">l</div>
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+							<button type="button" class="btn btn-primary">Save</button>
+						</div>
+					</form>
+				</div><!-- /.modal-content -->
+			</div><!-- /.modal-dialog -->
+		</div><!-- /.modal -->
+
+		<nav class="navbar navbar-default">
+			<div class="container-fluid">
+				<!-- Brand and toggle get grouped for better mobile display -->
+				<div class="navbar-header">
+					<a class="navbar-brand" href="/dashboard">whiskee</a>
+				</div>
+
+				<p class="navbar-text navbar-right">
+					Hello, {{ .principal.EMail }}&ensp;
+					<!-- <img src="http://www.gravatar.com/avatar/{{ .user.Gravatar }}?size=20" /> -->
+				</p>
+			</div>
+		</nav>
+
+		<div class="container">
+			{{ if .home }}
+			<form class="form-horizontal">
+				<div class="form-group">
+					<label class="col-sm-2 control-label">Whiskey</label>
+					<div class="col-sm-10">
+						<div class="input-group">
+							<select class="form-control">
+								{{ range .whiskeys }}
+								<option>{{ .ID }}</option>
+								{{ end }}
+							</select>
+							<a class="input-group-addon btn btn-default" data-toggle="modal" data-target="#add-whiskey">+</a>
+						</div>
 					</div>
 				</div>
+
+				<div class="form-group">
+					<label class="col-sm-2 control-label">Experience</label>
+					<div class="col-sm-10">
+						<textarea class="form-control" rows=3></textarea>
+					</div>
+				</div>
+				
+				<div class="form-group">
+					<div class="col-sm-offset-2 col-sm-10">
+						<button type="submit" class="btn btn-primary">Share</button>
+					</div>
+				</div>
+			</form>
+			{{ end }}
+
+			<h2>Profile of {{ .user.EMail }}</h2>
+
+			{{ range .posts }}
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<strong>{{ .Whiskey }}</strong> 
+					<span class="pull-right">{{ .Date }}</span>
+				</div>
+				<div class="panel-body media">
+					<div class="media-left text-center">
+					<img class="media-object" width="150px" height="200px" src="http://www.prestigedrinks.com/product_images/a/693/Glenfiddich_12YO_bottle__07680_zoom.jpg" alt="Glenfiddich 12yr">
+					</div>
+					<div class="media-body">
+						{{ .Body }}
+					</div>
+				</div>
+			</div>
+			{{ end }}
 		</div>
 
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
