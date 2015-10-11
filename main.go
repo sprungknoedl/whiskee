@@ -67,11 +67,11 @@ func main() {
 	secured.GET("/u/:id", ProfileR)
 	secured.GET("/u/:id/friend", AddFriendR)
 
+	secured.POST("/p", AddPostR)
 	secured.POST("/p/:id/comment", CommentR)
 	secured.GET("/p/:id/delete", DeletePostR)
 
-	secured.POST("/whiskey", AddWhiskeyR)
-	secured.POST("/post", AddPostR)
+	secured.POST("/w", AddWhiskeyR)
 
 	router.Run(":" + port)
 }
@@ -116,6 +116,7 @@ func ProfileR(c *gin.Context) {
 
 type WhiskeyForm struct {
 	Distillery string  `form:"distillery"`
+	Name       string  `form:"name"`
 	Type       string  `form:"type"`
 	Age        int     `form:"age"`
 	ABV        float64 `form:"abv"`
@@ -131,6 +132,7 @@ func AddWhiskeyR(c *gin.Context) {
 
 	whiskey := &model.Whiskey{
 		Distillery: form.Distillery,
+		Name:       form.Name,
 		Type:       form.Type,
 		Age:        form.Age,
 		ABV:        form.ABV,

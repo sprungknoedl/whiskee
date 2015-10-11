@@ -97,6 +97,7 @@ type Users struct {
 
 type Whiskey struct {
 	ID         int     `db:"id"`
+	Name       string  `db:"name"`
 	Distillery string  `db:"distillery"`
 	Type       string  `db:"type"`
 	Age        int     `db:"age"`
@@ -110,14 +111,14 @@ type Whiskeys struct {
 
 func (srv *Whiskeys) All() ([]*Whiskey, error) {
 	whiskeys := make([]*Whiskey, 0)
-	err := srv.conn.Select(&whiskeys, `SELECT * FROM whiskeys`)
+	err := srv.conn.Select(&whiskeys, `SELECT * FROM whiskeys ORDER BY distillery, name, age, size`)
 	return whiskeys, err
 }
 
 func (srv *Whiskeys) Create(whiskey *Whiskey) (*Whiskey, error) {
 	_, err := srv.conn.NamedExec(`
-		INSERT INTO whiskeys (distillery, type, age, abv, size) 
-		VALUES (:distillery, :type, :age, :abv, :size);`, whiskey)
+		INSERT INTO whiskeys (distillery, name, type, age, abv, size) 
+		VALUES (:distillery, :name, :type, :age, :abv, :size);`, whiskey)
 	return whiskey, err
 }
 
@@ -143,6 +144,7 @@ func (srv *Posts) GetNewsFeed(user string, limit int) ([]*Post, error) {
 		UserGravatar      string    `db:"user_gravatar"`
 		WhiskeyID         int       `db:"whiskey_id"`
 		WhiskeyDistillery string    `db:"whiskey_distillery"`
+		WhiskeyName       string    `db:"whiskey_name"`
 		WhiskeyType       string    `db:"whiskey_type"`
 		WhiskeyAge        int       `db:"whiskey_age"`
 		WhiskeyABV        float64   `db:"whiskey_abv"`
@@ -157,8 +159,9 @@ func (srv *Posts) GetNewsFeed(user string, limit int) ([]*Post, error) {
 	SELECT 
 		p.id as post_id, p.body as post_body, p.date as post_date,
 		u.id as user_id, u.email as user_email, u.gravatar as user_gravatar,
-		w.id as whiskey_id, w.distillery as whiskey_distillery, w.type as whiskey_type,
-			w.age as whiskey_age, w.abv as whiskey_abv, w.size as whiskey_size
+		w.id as whiskey_id, w.distillery as whiskey_distillery, w.name as whiskey_name,
+			w.type as whiskey_type, w.age as whiskey_age, w.abv as whiskey_abv, 
+			w.size as whiskey_size
 		FROM posts p
 		JOIN whiskeys w ON (p.whiskey_id = w.id)
 		JOIN users u ON (p.user_id = u.id)
@@ -177,6 +180,7 @@ func (srv *Posts) GetNewsFeed(user string, limit int) ([]*Post, error) {
 		whiskey := &Whiskey{
 			ID:         row.WhiskeyID,
 			Distillery: row.WhiskeyDistillery,
+			Name:       row.WhiskeyName,
 			Type:       row.WhiskeyType,
 			Age:        row.WhiskeyAge,
 			ABV:        row.WhiskeyABV,

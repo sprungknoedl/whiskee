@@ -6,6 +6,8 @@
 	body { padding-top: 2rem; }
 	</style>
   <body>
+		{{ template "whiskey-form.html" }}
+
 		<div class="ui container">
 			<div class="ui divided grid">
 				<div class="three wide column">
@@ -32,17 +34,23 @@
 				</div>
 
 				<div class="ten wide column">
-					<form id="add-post-form" class="ui form" action="/post" method="post">
-						<div class="field">
-							<div class="ui fluid search selection dropdown">
-								<input name="whiskey" type="hidden">
-								<i class="dropdown icon"></i>
-								<div class="default text">Select Whiskey</div>
-								<div class="menu">
-									{{ range .whiskeys }}
-									<div class="item" data-value="{{ .ID }}">{{ .Distillery }} {{ .Age }}yr</div>
-									{{ end }}
+					<form id="add-post-form" class="ui form" action="/p" method="post">
+						<div class="fields">
+							<div class="fifteen wide field">
+								<div class="ui fluid search selection dropdown">
+									<input name="whiskey" type="hidden">
+									<i class="dropdown icon"></i>
+									<div class="default text">Select Whiskey</div>
+									<div class="menu">
+										{{ range .whiskeys }}
+										<div class="item" data-value="{{ .ID }}">{{ .Distillery }} {{ .Name }} {{ .Age }}yr</div>
+										{{ end }}
+									</div>
 								</div>
+							</div>
+
+							<div class="one wide field">
+								<a id="add-whiskey-btn" class="ui icon button"><i class="ui plus icon"></i></a>
 							</div>
 						</div>
 
@@ -77,7 +85,7 @@
 								<div class="extra images">
 									<img class="ui top aligned image" src="/assets/img/{{ .Whiskey.ID }}-thumb.jpg">
 									<div style="display: inline-block">
-										<div><strong><a>{{ .Whiskey.Distillery }} {{ .Whiskey.Age }}yr</a></strong></div>
+										<div><strong><a>{{ .Whiskey.Distillery }} {{ .Whiskey.Name }} {{ .Whiskey.Age }}yr</a></strong></div>
 										<div>{{ .Whiskey.Type }}</div>
 										<div>{{ .Whiskey.ABV }}%, {{ .Whiskey.Size }}l</div>
 									</div>
@@ -103,16 +111,22 @@
 
 		{{ template "scripts.html" }}
 		<script>
-		$(function() {
-			$('.dropdown').dropdown();
+$('.dropdown').dropdown();
 
-			$('#add-post-form').form({
-				fields: {
-					whiskey: 'empty',
-					body: 'empty'
-				}
-			});
-		});
+$('#add-post-form').form({
+	fields: {
+		whiskey: 'empty',
+		body: 'empty'
+	}
+});
+
+$('#add-whiskey-btn').click(function() {
+		$('#whiskey-modal')
+		.modal({onApprove: function() {
+			$(this).find('form').submit();
+    }})
+		.modal('show');
+})
 		</script>
   </body>
 </html>
