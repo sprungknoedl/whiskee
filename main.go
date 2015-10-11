@@ -4,6 +4,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
+	"time"
 
 	"github.com/sprungknoedl/whiskee/Godeps/_workspace/src/github.com/gin-gonic/contrib/commonlog"
 	"github.com/sprungknoedl/whiskee/Godeps/_workspace/src/github.com/gin-gonic/contrib/cors"
@@ -58,8 +60,18 @@ func main() {
 	router.GET("/auth/google/callback", GoogleCallbackR)
 
 	secured := router.Group("/", Secured)
-	secured.GET("/u/:id", ProfileR)
 	secured.GET("/logout", LogoutR)
+
+	secured.GET("/feed", NewsFeedR)
+	secured.GET("/users", UsersR)
+	secured.GET("/u/:id", ProfileR)
+	secured.GET("/u/:id/friend", AddFriendR)
+
+	secured.POST("/p/:id/comment", CommentR)
+	secured.GET("/p/:id/delete", DeletePostR)
+
+	secured.POST("/whiskey", AddWhiskeyR)
+	secured.POST("/post", AddPostR)
 
 	router.Run(":" + port)
 }
@@ -68,15 +80,8 @@ func IndexR(c *gin.Context) {
 	c.HTML(http.StatusOK, "index.html", gin.H{})
 }
 
-func ProfileR(c *gin.Context) {
+func NewsFeedR(c *gin.Context) {
 	principal := c.MustGet("user").(*model.User)
-	id := c.Param("id")
-
-	user, err := db.Users.Get(id)
-	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
-		return
-	}
 
 	whiskeys, err := db.Whiskeys.All()
 	if err != nil {
@@ -84,7 +89,7 @@ func ProfileR(c *gin.Context) {
 		return
 	}
 
-	posts, err := db.Posts.FindByUser(id, 50)
+	posts, err := db.Posts.GetNewsFeed(principal.ID, 50)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -92,9 +97,126 @@ func ProfileR(c *gin.Context) {
 
 	c.HTML(http.StatusOK, "dashboard.html", gin.H{
 		"principal": principal,
-		"user":      user,
 		"whiskeys":  whiskeys,
 		"posts":     posts,
-		"home":      user.ID == principal.ID,
 	})
+}
+
+func ProfileR(c *gin.Context) {
+	// principal := c.MustGet("user").(*model.User)
+	// id := c.Param("id")
+
+	// user, err := db.Users.Get(id)
+	// if err != nil {
+	// 	c.AbortWithError(http.StatusInternalServerError, err)
+	// 	return
+	// }
+	c.Redirect(http.StatusSeeOther, "/feed")
+}
+
+type WhiskeyForm struct {
+	Distillery string  `form:"distillery"`
+	Type       string  `form:"type"`
+	Age        int     `form:"age"`
+	ABV        float64 `form:"abv"`
+	Size       float64 `form:"size"`
+}
+
+func AddWhiskeyR(c *gin.Context) {
+	var form WhiskeyForm
+	if err := c.Bind(&form); err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	whiskey := &model.Whiskey{
+		Distillery: form.Distillery,
+		Type:       form.Type,
+		Age:        form.Age,
+		ABV:        form.ABV,
+		Size:       form.Size,
+	}
+
+	if _, err := db.Whiskeys.Create(whiskey); err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.Redirect(http.StatusSeeOther, "/feed")
+}
+
+type PostForm struct {
+	Whiskey int    `form:"whiskey"`
+	Body    string `form:"body"`
+}
+
+func AddPostR(c *gin.Context) {
+	principal := c.MustGet("user").(*model.User)
+
+	var form PostForm
+	if err := c.Bind(&form); err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	post := &model.Post{
+		User:    principal,
+		Date:    time.Now(),
+		Whiskey: &model.Whiskey{ID: form.Whiskey},
+		Body:    form.Body,
+	}
+
+	if _, err := db.Posts.Create(post); err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.Redirect(http.StatusSeeOther, "/u/"+principal.ID)
+}
+
+func CommentR(c *gin.Context) {
+	c.Redirect(http.StatusSeeOther, "/feed")
+}
+
+func DeletePostR(c *gin.Context) {
+	param := c.Param("id")
+	id, err := strconv.Atoi(param)
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	if err := db.Posts.Delete(id); err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.Redirect(http.StatusSeeOther, "/feed")
+}
+
+func UsersR(c *gin.Context) {
+	principal := c.MustGet("user").(*model.User)
+
+	users, err := db.Users.All()
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.HTML(http.StatusOK, "users.html", gin.H{
+		"principal": principal,
+		"users":     users,
+	})
+}
+
+func AddFriendR(c *gin.Context) {
+	principal := c.MustGet("user").(*model.User)
+	friend := c.Param("id")
+
+	if err := db.Users.AddFriend(principal.ID, friend); err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.Redirect(http.StatusSeeOther, "/feed")
 }

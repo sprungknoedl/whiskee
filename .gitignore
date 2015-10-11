@@ -1,5 +1,6 @@
 # Heroku specific files
 .env
+db/dbconf.yml
 
 # Compiled Object files, Static and Dynamic libs (Shared Objects)
 *.o

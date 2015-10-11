@@ -78,7 +78,7 @@ func GoogleCallbackR(c *gin.Context) {
 
 	session.Set("user", user)
 	session.Save()
-	c.Redirect(http.StatusSeeOther, "/u/"+user.ID)
+	c.Redirect(http.StatusSeeOther, "/feed")
 }
 
 type JWT map[string]interface{}

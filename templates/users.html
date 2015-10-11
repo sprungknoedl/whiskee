@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+	{{ template "head.html" }}
+
+	<style>
+	body { padding-top: 2rem; }
+	</style>
+  <body>
+		<div class="ui container">
+			<div class="ui divided grid">
+				<div class="three wide column">
+					<div class="ui fluid vertical text menu">
+						<div class="item">
+							<img class="ui avatar image" src="http://www.gravatar.com/avatar/{{ .principal.Gravatar }}" />
+							<span>{{ .principal.EMail }}</span>
+						</div>
+
+						<div class="item">
+							<div class="header">Favorites</div>
+							<div class="menu">
+								<a class="item" href="/feed">News Feed</a></li>
+							</div>
+						</div>
+
+						<div class="item">
+							<div class="header">Users</div>
+							<div class="menu">
+								<a class="active item" href="/users">All</a></li>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="ten wide column">
+					<h4 class="ui horizontal divider header">
+						<i class="user icon"></i>
+						Users
+					</h4>
+
+					<div class="ui horizontal relaxed list">
+						{{ range .users }}
+						<div class="item">
+							<img class="ui avatar image" src="http://www.gravatar.com/avatar/{{ .Gravatar }}" />
+							<div class="content">
+								<span class="header">{{ .EMail }}</span>
+								<div class="description">
+									<a href="/u/{{ .ID }}/friend"><i class="add user icon"></i> Add Friend</a>
+								</div>
+							</div>
+						</div>
+						{{ end }}
+					</div>
+
+				</div>
+			</div>
+		</div> <!-- /container -->
+
+		{{ template "scripts.html" }}
+		<script>
+		$(function() {
+			$('.dropdown').dropdown();
+
+			$('#add-post-form').form({
+				fields: {
+					whiskey: 'empty',
+					body: 'empty'
+				}
+			});
+		});
+		</script>
+  </body>
+</html>

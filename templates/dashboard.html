@@ -1,136 +1,118 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>whiskee</title>
+	{{ template "head.html" }}
 
-		<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-		<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
-  </head>
+	<style>
+	body { padding-top: 2rem; }
+	</style>
   <body>
-		<div class="modal fade" id="add-whiskey">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-						<h4 class="modal-title">Add Whiskey</h4>
+		<div class="ui container">
+			<div class="ui divided grid">
+				<div class="three wide column">
+					<div class="ui fluid vertical text menu">
+						<div class="item">
+							<img class="ui avatar image" src="http://www.gravatar.com/avatar/{{ .principal.Gravatar }}" />
+							<span>{{ .principal.EMail }}</span>
+						</div>
+
+						<div class="item">
+							<div class="header">Favorites</div>
+							<div class="menu">
+								<a class="active item" href="/feed">News Feed</a></li>
+							</div>
+						</div>
+
+						<div class="item">
+							<div class="header">Users</div>
+							<div class="menu">
+								<a class="item" href="/users">All</a></li>
+							</div>
+						</div>
 					</div>
-					<form>
-						<div class="modal-body">
-							<div class="form-group">
-								<label for="exampleInputEmail1">Distillery</label>
-								<input type="text" class="form-control">
-							</div>
-							<div class="form-group">
-								<label for="exampleInputEmail1">Type</label>
-								<select class="form-control">
-									<option>Single Malt</option>
-									<option>Vatted Malt</option>
-									<option>Blended</option>
-									<option>Single Barrel</option>
-									<option>Cask Strength</option>
-								</select>
-							</div>
-							<div class="form-group">
-								<label for="exampleInputEmail1">Age</label>
-								<div class="input-group">
-									<input type="text" class="form-control">
-									<div class="input-group-addon">yr</div>
-								</div>
-							</div>
-							<div class="form-group">
-								<label for="exampleInputEmail1">ABV</label>
-								<div class="input-group">
-									<input type="text" class="form-control">
-									<div class="input-group-addon">%</div>
-								</div>
-							</div>
-							<div class="form-group">
-								<label for="exampleInputEmail1">Bottle Size</label>
-								<div class="input-group">
-									<input type="text" class="form-control">
-									<div class="input-group-addon">l</div>
+				</div>
+
+				<div class="ten wide column">
+					<form id="add-post-form" class="ui form" action="/post" method="post">
+						<div class="field">
+							<div class="ui fluid search selection dropdown">
+								<input name="whiskey" type="hidden">
+								<i class="dropdown icon"></i>
+								<div class="default text">Select Whiskey</div>
+								<div class="menu">
+									{{ range .whiskeys }}
+									<div class="item" data-value="{{ .ID }}">{{ .Distillery }} {{ .Age }}yr</div>
+									{{ end }}
 								</div>
 							</div>
 						</div>
-						<div class="modal-footer">
-							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-							<button type="button" class="btn btn-primary">Save</button>
+
+						<div class="field">
+							<textarea rows=3 name="body" placeholder="Share your experience"></textarea>
+						</div>
+						
+						<button class="ui button" type="submit"><i class="ui world icon"></i> Share</button>
+
+						<div class="ui error message">
+							<ul class="list"></ul>
 						</div>
 					</form>
-				</div><!-- /.modal-content -->
-			</div><!-- /.modal-dialog -->
-		</div><!-- /.modal -->
 
-		<nav class="navbar navbar-default">
-			<div class="container-fluid">
-				<!-- Brand and toggle get grouped for better mobile display -->
-				<div class="navbar-header">
-					<a class="navbar-brand" href="/dashboard">whiskee</a>
-				</div>
+					<h4 class="ui horizontal divider header">
+						<i class="tag icon"></i>
+						News Feed
+					</h4>
 
-				<p class="navbar-text navbar-right">
-					Hello, {{ .principal.EMail }}&ensp;
-					<!-- <img src="http://www.gravatar.com/avatar/{{ .user.Gravatar }}?size=20" /> -->
-				</p>
-			</div>
-		</nav>
+					<div class="ui feed">
+						{{ range .posts }}
+						<div class="event">
+							<div class="label">
+								<img src="http://www.gravatar.com/avatar/{{ .User.Gravatar }}" />
+							</div>
+							<div class="content">
+								<div class="summary">
+									<a class="user" href="/u/{{ .User.ID }}">{{ .User.EMail }}</a> created a post.
+									<div class="date">{{ .Date }}</div>
+								</div>
 
-		<div class="container">
-			{{ if .home }}
-			<form class="form-horizontal">
-				<div class="form-group">
-					<label class="col-sm-2 control-label">Whiskey</label>
-					<div class="col-sm-10">
-						<div class="input-group">
-							<select class="form-control">
-								{{ range .whiskeys }}
-								<option>{{ .ID }}</option>
-								{{ end }}
-							</select>
-							<a class="input-group-addon btn btn-default" data-toggle="modal" data-target="#add-whiskey">+</a>
+								<div class="extra images">
+									<img class="ui top aligned image" src="/assets/img/{{ .Whiskey.ID }}-thumb.jpg">
+									<div style="display: inline-block">
+										<div><strong><a>{{ .Whiskey.Distillery }} {{ .Whiskey.Age }}yr</a></strong></div>
+										<div>{{ .Whiskey.Type }}</div>
+										<div>{{ .Whiskey.ABV }}%, {{ .Whiskey.Size }}l</div>
+									</div>
+								</div>
+								<div class="extra text">
+									{{ .Body }}
+								</div>
+
+
+								<div class="meta">
+									<a href="/p/{{ .ID }}/like"><i class="ui heart icon"></i> Like</a>
+									<a href="/p/{{ .ID }}/delete"><i class="ui trash icon"></i> Delete</a>
+								</div>
+							</div>
 						</div>
-					</div>
-				</div>
 
-				<div class="form-group">
-					<label class="col-sm-2 control-label">Experience</label>
-					<div class="col-sm-10">
-						<textarea class="form-control" rows=3></textarea>
+						{{ end }}
 					</div>
-				</div>
-				
-				<div class="form-group">
-					<div class="col-sm-offset-2 col-sm-10">
-						<button type="submit" class="btn btn-primary">Share</button>
-					</div>
-				</div>
-			</form>
-			{{ end }}
 
-			<h2>Profile of {{ .user.EMail }}</h2>
-
-			{{ range .posts }}
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					<strong>{{ .Whiskey }}</strong> 
-					<span class="pull-right">{{ .Date }}</span>
-				</div>
-				<div class="panel-body media">
-					<div class="media-left text-center">
-					<img class="media-object" width="150px" height="200px" src="http://www.prestigedrinks.com/product_images/a/693/Glenfiddich_12YO_bottle__07680_zoom.jpg" alt="Glenfiddich 12yr">
-					</div>
-					<div class="media-body">
-						{{ .Body }}
-					</div>
 				</div>
 			</div>
-			{{ end }}
-		</div>
+		</div> <!-- /container -->
 
-		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+		{{ template "scripts.html" }}
+		<script>
+		$(function() {
+			$('.dropdown').dropdown();
+
+			$('#add-post-form').form({
+				fields: {
+					whiskey: 'empty',
+					body: 'empty'
+				}
+			});
+		});
+		</script>
   </body>
 </html>
