@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -51,4 +53,24 @@
 		<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.4/components/table.min.css">
 		<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.4/components/transition.min.css">
 		<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.4/components/video.min.css">
+
+		<style>
+		.full.height { display: flex; min-height: 100vh; flex-direction: column; }
+		.full.height > .body { display: flex; flex: 1; }
+		.full.height > .body > .toc { background-color: #1B1C1D; flex: 0 0 12em; }
+		.full.height > .body > .article { flex: 1; }
+
+		.main.container {
+			padding-top: 3em;
+			padding-bottom: 3em;
+
+			margin-left: 3em !important;
+			margin-right: 3em !important;
+			width: auto !important;
+			max-width: 960px !important;
+		}
+		</style>
   </head>
+  <body>
+		<div class="full height">
+			<div class="body">

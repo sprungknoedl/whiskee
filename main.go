@@ -1,12 +1,14 @@
 package main
 
 import (
+	"html/template"
 	"log"
 	"net/http"
 	"os"
 	"strconv"
 	"time"
 
+	"github.com/dustin/go-humanize"
 	"github.com/sprungknoedl/whiskee/Godeps/_workspace/src/github.com/gin-gonic/contrib/commonlog"
 	"github.com/sprungknoedl/whiskee/Godeps/_workspace/src/github.com/gin-gonic/contrib/cors"
 	"github.com/sprungknoedl/whiskee/Godeps/_workspace/src/github.com/gin-gonic/contrib/sessions"
@@ -53,7 +55,11 @@ func main() {
 	router.Use(gin.ErrorLogger())
 
 	router.Static("/assets", "assets")
-	router.LoadHTMLGlob("templates/*")
+	router.SetHTMLTemplate(template.Must(template.New("views").
+		Funcs(template.FuncMap{
+		"humanizeTime": humanize.Time,
+	}).
+		ParseGlob("templates/*")))
 
 	router.GET("/", IndexR)
 	router.GET("/auth/google", GoogleAuthR)
@@ -64,6 +70,7 @@ func main() {
 
 	secured.GET("/feed", NewsFeedR)
 	secured.GET("/users", UsersR)
+	secured.GET("/friends", FriendsR)
 	secured.GET("/u/:id", ProfileR)
 	secured.GET("/u/:id/friend", AddFriendR)
 
@@ -189,33 +196,6 @@ func DeletePostR(c *gin.Context) {
 	}
 
 	if err := db.Posts.Delete(id); err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
-		return
-	}
-
-	c.Redirect(http.StatusSeeOther, "/feed")
-}
-
-func UsersR(c *gin.Context) {
-	principal := c.MustGet("user").(*model.User)
-
-	users, err := db.Users.All()
-	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
-		return
-	}
-
-	c.HTML(http.StatusOK, "users.html", gin.H{
-		"principal": principal,
-		"users":     users,
-	})
-}
-
-func AddFriendR(c *gin.Context) {
-	principal := c.MustGet("user").(*model.User)
-	friend := c.Param("id")
-
-	if err := db.Users.AddFriend(principal.ID, friend); err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}

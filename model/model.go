@@ -1,11 +1,7 @@
 package model
 
 import (
-	"crypto/md5"
-	"database/sql"
 	"encoding/gob"
-	"fmt"
-	"strings"
 	"time"
 
 	"github.com/sprungknoedl/whiskee/Godeps/_workspace/src/github.com/jmoiron/sqlx"
@@ -35,64 +31,6 @@ func Connect(url string) (*Model, error) {
 		Whiskeys: &Whiskeys{conn},
 		Posts:    &Posts{conn},
 	}, nil
-}
-
-type User struct {
-	ID       string `db:"id"`
-	EMail    string `db:"email"`
-	Gravatar string `db:"gravatar"`
-}
-
-func (srv *Users) All() ([]*User, error) {
-	users := make([]*User, 0)
-	err := srv.conn.Select(&users, `SELECT * FROM users`)
-	return users, err
-}
-
-func (srv *Users) Get(id string) (*User, error) {
-	u := &User{}
-	err := srv.conn.Get(u, "SELECT * FROM users WHERE id = $1", id)
-	return u, err
-}
-
-func (srv *Users) Create(id, email string) (*User, error) {
-	data := []byte(strings.TrimSpace(email))
-	gravatar := fmt.Sprintf("%x", md5.Sum(data))
-
-	user := &User{
-		ID:       id,
-		EMail:    email,
-		Gravatar: gravatar,
-	}
-
-	_, err := srv.conn.NamedExec("INSERT INTO users (id, email, gravatar) VALUES (:id, :email, :gravatar);", user)
-	return user, err
-}
-
-func (srv *Users) GetOrCreate(id, email string) (*User, error) {
-	user, err := srv.Get(id)
-	if err != nil && err != sql.ErrNoRows {
-		return nil, err
-	}
-
-	// register user
-	if err == sql.ErrNoRows {
-		user, err = srv.Create(id, email)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	return user, nil
-}
-
-func (srv *Users) AddFriend(a, b string) error {
-	_, err := srv.conn.Exec(`INSERT into friends (a, b) VALUES ($1, $2)`, a, b)
-	return err
-}
-
-type Users struct {
-	conn *sqlx.DB
 }
 
 type Whiskey struct {
@@ -151,12 +89,8 @@ func (srv *Posts) GetNewsFeed(user string, limit int) ([]*Post, error) {
 		WhiskeySize       float64   `db:"whiskey_size"`
 	}, 0)
 
-	err := srv.conn.Select(&rows, `
-	WITH undirected (a, b) AS (
-		SELECT a, b FROM friends
-		UNION ALL
-		SELECT b, a FROM friends)
-	SELECT 
+	err := srv.conn.Select(&rows,
+		`SELECT 
 		p.id as post_id, p.body as post_body, p.date as post_date,
 		u.id as user_id, u.email as user_email, u.gravatar as user_gravatar,
 		w.id as whiskey_id, w.distillery as whiskey_distillery, w.name as whiskey_name,
@@ -166,7 +100,7 @@ func (srv *Posts) GetNewsFeed(user string, limit int) ([]*Post, error) {
 		JOIN whiskeys w ON (p.whiskey_id = w.id)
 		JOIN users u ON (p.user_id = u.id)
 		WHERE p.user_id = $1 OR 
-			p.user_id IN (SELECT b FROM undirected WHERE a = $1)
+			p.user_id IN (SELECT b FROM friends WHERE a = $1)
 		ORDER BY p.date DESC LIMIT $2`, user, limit)
 
 	posts := make([]*Post, len(rows))
