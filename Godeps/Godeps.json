@@ -11,6 +11,10 @@
 			"Rev": "9c0e6bab4dd444285424f189b8fb0cb03f653242"
 		},
 		{
+			"ImportPath": "github.com/dustin/go-humanize",
+			"Rev": "c20a8bde38c8f5ba06f6600edf473705c96829d1"
+		},
+		{
 			"ImportPath": "github.com/garyburd/redigo/internal",
 			"Rev": "764a32c188f6ce0bc2565349f0125b3ad4021ea9"
 		},

@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/dustin/go-humanize"
+	"github.com/sprungknoedl/whiskee/Godeps/_workspace/src/github.com/dustin/go-humanize"
 	"github.com/sprungknoedl/whiskee/Godeps/_workspace/src/github.com/gin-gonic/contrib/commonlog"
 	"github.com/sprungknoedl/whiskee/Godeps/_workspace/src/github.com/gin-gonic/contrib/cors"
 	"github.com/sprungknoedl/whiskee/Godeps/_workspace/src/github.com/gin-gonic/contrib/sessions"
