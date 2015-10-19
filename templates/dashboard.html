@@ -41,7 +41,7 @@
 			News Feed
 		</h4>
 
-		<div class="ui relaxed divided items">
+		<div class="ui relaxed items">
 			{{ range .posts }}
 			<div class="item">
 				<div class="ui small image">
@@ -50,7 +50,9 @@
 				<div class="content">
 					<div class="meta">
 						<img class="ui avatar image" src="http://www.gravatar.com/avatar/{{ .User.Gravatar }}" />
-						<strong><a href="/u/{{ .User.ID }}">{{ .User.EMail }}</a> created a post.</strong>&emsp;{{ .Date | humanizeTime }}
+						<strong><a href="/u/{{ .User.ID }}">{{ .User.EMail }}</a> created a post.</strong>
+						&emsp;{{ .Date | humanizeTime }}
+						&emsp;<i class="ui {{ .Security }} icon"></i> {{ .Security }}
 					</div>
 					<div class="header">
 						<a>{{ .Whiskey.Distillery }} {{ .Whiskey.Name }} {{ .Whiskey.Age }}yr</a>,
@@ -63,33 +65,41 @@
 					</div>
 
 					<div class="meta">
+						<a><i class="ui comment icon"></i> Comment</a>
 						<a href="/p/{{ .ID }}/like"><i class="ui heart icon"></i> Like</a>
 						<a href="/p/{{ .ID }}/delete"><i class="ui trash icon"></i> Delete</a>
 					</div>
+
+					<div class="ui horizontal divider">Comments</div>
+
+					<div class="extra">
+						<div class="ui comments">
+							<div class="comment">
+								<a class="avatar"> <img src="http://www.gravatar.com/avatar/{{ .User.Gravatar }}"> </a>
+								<div class="content">
+									<a class="author">Matt</a>
+									<div class="metadata"> <span class="date">{{ .Date | humanizeTime }}</span> </div>
+									<div class="text">
+										How artistic!
+									</div>
+								</div>
+							</div>
+
+							<form class="ui reply form">
+								<div class="small field">
+									<input placeholder="Press enter to comment."></input>
+								</div>
+							</form>
+						</div>
+					</div>
+
 				</div>
 			</div>
+
+
 			{{ end }}
 
 		</div> <!-- /items -->
 
 		{{ template "scripts.html" }}
-		<script>
-		$('.dropdown').dropdown();
-
-		$('#add-post-form').form({
-			fields: {
-				whiskey: 'empty',
-				body: 'empty'
-			}
-		});
-
-		$('#add-whiskey-btn').click(function() {
-				$('#whiskey-modal')
-				.modal({onApprove: function() {
-					$(this).find('form').submit();
-				}})
-				.modal('show');
-		})
-		</script>
-
 {{ template "footer.html" }}

@@ -27,10 +27,16 @@ func (srv *Users) All() ([]*User, error) {
 
 func (srv *Users) Friends(id string) ([]*User, error) {
 	users := make([]*User, 0)
-	err := srv.conn.Select(&users,
-		`SELECT u.* FROM users u
+	err := srv.conn.Select(&users, `SELECT
+		u.* FROM users u
 		JOIN friends f ON u.id = f.b
 		WHERE f.a = $1`, id)
+	return users, err
+}
+
+func (srv *Users) SearchByEMail(email string) ([]*User, error) {
+	users := make([]*User, 0)
+	err := srv.conn.Select(&users, `SELECT * FROM users WHERE email like $1`, "%"+email+"%")
 	return users, err
 }
 
@@ -73,5 +79,10 @@ func (srv *Users) GetOrCreate(id, email string) (*User, error) {
 
 func (srv *Users) AddFriend(a, b string) error {
 	_, err := srv.conn.Exec(`INSERT into friends (a, b) VALUES ($1, $2)`, a, b)
+	return err
+}
+
+func (srv *Users) DelFriend(a, b string) error {
+	_, err := srv.conn.Exec(`DELETE from friends WHERE a = $1 and b = $2`, a, b)
 	return err
 }

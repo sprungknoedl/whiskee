@@ -70,9 +70,12 @@ func main() {
 
 	secured.GET("/feed", NewsFeedR)
 	secured.GET("/users", UsersR)
-	secured.GET("/friends", FriendsR)
+	secured.GET("/search", SearchR)
 	secured.GET("/u/:id", ProfileR)
-	secured.GET("/u/:id/friend", AddFriendR)
+
+	secured.GET("/friends", FriendsR)
+	secured.GET("/friends/add/:id", AddFriendR)
+	secured.GET("/friends/del/:id", DelFriendR)
 
 	secured.POST("/p", AddPostR)
 	secured.POST("/p/:id/comment", CommentR)

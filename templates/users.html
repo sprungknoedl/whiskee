@@ -4,6 +4,11 @@
 <div class="article">
 	<div class="ui main container">
 
+		<div class="ui search">
+			<input class="prompt" placeholder="Common passwords..." type="text">
+			<div class="results"></div>
+		</div>
+
 		<h4 class="ui horizontal divider header">
 			<i class="user icon"></i>
 			Users
@@ -20,7 +25,8 @@
 					</div>
 				</div>
 				<div class="extra content">
-					<a href="/u/{{ .ID }}/friend"><i class="add user icon"></i> Add Friend</a>
+					<a href="/friends/add/{{ .ID }}"><i class="add user icon"></i> Add Friend</a>
+					<a href="/friends/del/{{ .ID }}"><i class="trash icon"></i> Remove Friend</a>
 				</div>
 			</div>
 			{{ end }}
