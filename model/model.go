@@ -61,11 +61,12 @@ func (srv *Whiskeys) Create(whiskey *Whiskey) (*Whiskey, error) {
 }
 
 type Post struct {
-	ID      int
-	User    *User
-	Whiskey *Whiskey
-	Date    time.Time
-	Body    string
+	ID       int
+	User     *User
+	Whiskey  *Whiskey
+	Date     time.Time
+	Body     string
+	Security string
 }
 
 type Posts struct {
@@ -77,6 +78,7 @@ func (srv *Posts) GetNewsFeed(user string, limit int) ([]*Post, error) {
 		PostID            int       `db:"post_id"`
 		PostBody          string    `db:"post_body"`
 		PostDate          time.Time `db:"post_date"`
+		PostSecurity      string    `db:"post_security"`
 		UserID            string    `db:"user_id"`
 		UserEMail         string    `db:"user_email"`
 		UserGravatar      string    `db:"user_gravatar"`
@@ -89,19 +91,37 @@ func (srv *Posts) GetNewsFeed(user string, limit int) ([]*Post, error) {
 		WhiskeySize       float64   `db:"whiskey_size"`
 	}, 0)
 
-	err := srv.conn.Select(&rows,
-		`SELECT 
-		p.id as post_id, p.body as post_body, p.date as post_date,
-		u.id as user_id, u.email as user_email, u.gravatar as user_gravatar,
-		w.id as whiskey_id, w.distillery as whiskey_distillery, w.name as whiskey_name,
-			w.type as whiskey_type, w.age as whiskey_age, w.abv as whiskey_abv, 
-			w.size as whiskey_size
-		FROM posts p
-		JOIN whiskeys w ON (p.whiskey_id = w.id)
-		JOIN users u ON (p.user_id = u.id)
-		WHERE p.user_id = $1 OR 
-			p.user_id IN (SELECT b FROM friends WHERE a = $1)
-		ORDER BY p.date DESC LIMIT $2`, user, limit)
+	err := srv.conn.Select(&rows, `select 
+	p.id as post_id, p.body as post_body, p.date as post_date, p.security as post_security,
+	u.id as user_id, u.email as user_email, u.gravatar as user_gravatar,
+	w.id as whiskey_id, w.distillery as whiskey_distillery, w.name as whiskey_name,
+		w.type as whiskey_type, w.age as whiskey_age, w.abv as whiskey_abv, 
+		w.size as whiskey_size
+
+	from posts p
+	join users u on u.id = p.user_id
+	join whiskeys w on w.id = p.whiskey_id
+
+	where
+		-- select my posts
+		p.id in (select p.id from posts p
+			where p.user_id = $1) or
+
+		-- select public posts of my friends
+		p.id in (select p.id from posts p 
+			join friends f on p.user_id = f.b
+			where (f.a = $1 and p.security = 'public')) or
+
+		-- select private posts of my friends
+		p.id in (with mutual as (
+				select b as id from friends where a = $1 intersect 
+				select a as id from friends where b = $1)
+			select p.id from posts p
+			join mutual m on m.id = p.user_id
+			where p.security = 'friends')
+
+	order by p.date desc
+	limit $2`, user, limit)
 
 	posts := make([]*Post, len(rows))
 	for i, row := range rows {
@@ -122,11 +142,12 @@ func (srv *Posts) GetNewsFeed(user string, limit int) ([]*Post, error) {
 		}
 
 		posts[i] = &Post{
-			ID:      row.PostID,
-			Date:    row.PostDate,
-			Body:    row.PostBody,
-			User:    user,
-			Whiskey: whiskey,
+			ID:       row.PostID,
+			Date:     row.PostDate,
+			Body:     row.PostBody,
+			Security: row.PostSecurity,
+			User:     user,
+			Whiskey:  whiskey,
 		}
 	}
 
