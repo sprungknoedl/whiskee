@@ -24,20 +24,28 @@ var WhiskeyForm = Marionette.ItemView.extend({
 
 	submit: function(e) {
 		e.preventDefault();
+		this.$('.dimmer').addClass('active');
+
 		var body = this.$('[name=body]').val();
 		var whiskey = this.$('[name=whiskey]').val();
 
-		// clear form
-		this.$('[name=body]').val('');
-		this.$('.dropdown').dropdown('clear');
-
-		var post = this.posts.create({
+		this.posts.create({
 			body:     body,
 			security: 'public',
 			date:     new Date(),
 			user:     app.Principal,
 			whiskey:  {id: +whiskey},
-		}, { wait: true });
+		}, { 
+			wait: true,
+			success: function() {
+				// clear form
+				this.$('[name=body]').val('');
+				this.$('.dropdown').dropdown('clear');
+
+				// remove dimmer
+				this.$('.dimmer').removeClass('active');
+			}
+		});
 	},
 });
 

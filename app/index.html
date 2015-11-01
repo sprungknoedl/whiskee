@@ -21,50 +21,58 @@
 	</script>
 
 	<script id="home-tpl" type="text/template">
-	<% if (app.Principal) { %>
-		<span>Hello <%= app.Principal.get('name') %></span>
-		<a class="ui button" onclick='app.Auth.logout()'>Logout</a>
-	<% } else { %>
-		<a class="ui button login">Login</a>
-	<% } %>
+	<div class="ui secondary menu">
+	<div class="header item">whiskee</div>
+	<a class="active item">
+		Home
+	</a>
+
+	<div class="right menu">
+		<% if (app.Principal) { %>
+			<a class="ui item" onclick='app.Auth.logout()'>Logout</a>
+		<% } else { %>
+			<a class="ui item login">Login</a>
+		<% } %>
+	</div>
+	</div>
 
 	<div id="form"></div>
 	<div id="feed"></div>
 	</script>
 
 	<script id="whiskey-form-tpl" type="text/template">
-	<h4 class="ui horizontal divider header">
-		<i class="tag icon"></i> Create Post
-	</h4>
+	<div class="ui basic segment">
+		<div class="ui inverted dimmer">
+			<div class="ui indeterminate text loader">Sharing Post</div>
+		</div>
 
-	<form class="ui form">
-		<div class="field">
-			<div class="ui fluid search selection dropdown">
-				<input name="whiskey" type="hidden">
-				<i class="dropdown icon"></i>
-				<div class="default text">Select Whiskey</div>
-				<div class="menu">
-					<% _.each(whiskeys, function(whiskey) { %>
-					<div class="item" data-value="<%= whiskey.id %>"><%= whiskey.distillery %> <%= whiskey.name %> <%= whiskey.age %>yr</div>
-					<% }); %>
+		<form class="ui form">
+			<div class="field">
+				<div class="ui fluid search selection dropdown">
+					<input name="whiskey" type="hidden">
+					<i class="dropdown icon"></i>
+					<div class="default text">Select Whiskey</div>
+					<div class="menu">
+						<% _.each(whiskeys, function(whiskey) { %>
+						<div class="item" data-value="<%= whiskey.id %>"><%= whiskey.distillery %> <%= whiskey.name %> <%= whiskey.age %>yr</div>
+						<% }); %>
+					</div>
 				</div>
 			</div>
-		</div>
 
-		<div class="field">
-			<textarea rows=3 name="body" placeholder="Share your experience"></textarea>
-		</div>
-		
-		<button class="ui button" type="submit"><i class="ui world icon"></i> Share</button>
-	</form>
+			<div class="field">
+				<textarea rows=3 name="body" placeholder="Share your experience"></textarea>
+			</div>
+			
+			<button class="ui button" type="submit"><i class="ui world icon"></i> Share</button>
+		</form>
+	</div>
 	</script>
 
 	<script id="feed-tpl" type="text/template">
-	<h4 class="ui horizontal divider header">
-		<i class="tag icon"></i> News Feed
-	</h4>
-
+	<div class="ui basic segment">
 	<div id="feed-items" class="ui relaxed items"></div>
+	</div>
 	</script>
 
 	<script id="feed-item-tpl" type="text/template">
@@ -76,7 +84,7 @@
 		<div class="meta">
 			<img class="ui avatar image" src="<%= user.picture %>" />
 			<strong><a href="/u/<%= user.id %>"><%= user.email %></a> created a post</strong>
-			&emsp;<%= date %>
+			&emsp;<%= moment(date).fromNow() %>
 			&emsp;<i class="ui <%= security %> icon"></i> <%= security %>
 		</div>
 		<div class="header">
@@ -99,6 +107,7 @@
 
 	<!-- libraries -->
 	<script src="/static/js/lock.min.js"></script>
+	<script src="/static/js/moment.min.js"></script>
 	<script src="/static/js/jquery.min.js"></script>
 	<script src="/static/js/underscore.min.js"></script>
 	<script src="/static/js/backbone.min.js"></script>
