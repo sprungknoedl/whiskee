@@ -59,7 +59,7 @@ var Auth = Marionette.Object.extend({
 })
 
 var RootView = Marionette.LayoutView.extend({
-	el: 'body',
+	el: '#body',
 	template: '#root-tpl',
 
 	regions: {
