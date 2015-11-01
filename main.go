@@ -1,207 +1,84 @@
 package main
 
 import (
-	"html/template"
+	"encoding/base64"
 	"log"
 	"net/http"
 	"os"
-	"strconv"
-	"time"
 
-	"github.com/sprungknoedl/whiskee/Godeps/_workspace/src/github.com/dustin/go-humanize"
-	"github.com/sprungknoedl/whiskee/Godeps/_workspace/src/github.com/gin-gonic/contrib/commonlog"
-	"github.com/sprungknoedl/whiskee/Godeps/_workspace/src/github.com/gin-gonic/contrib/cors"
-	"github.com/sprungknoedl/whiskee/Godeps/_workspace/src/github.com/gin-gonic/contrib/sessions"
+	"github.com/sprungknoedl/whiskee/Godeps/_workspace/src/github.com/auth0/go-jwt-middleware"
+	"github.com/sprungknoedl/whiskee/Godeps/_workspace/src/github.com/dgrijalva/jwt-go"
 	"github.com/sprungknoedl/whiskee/Godeps/_workspace/src/github.com/gin-gonic/gin"
-	"github.com/sprungknoedl/whiskee/model"
-
-	"github.com/sprungknoedl/whiskee/Godeps/_workspace/src/golang.org/x/oauth2"
-	"github.com/sprungknoedl/whiskee/Godeps/_workspace/src/golang.org/x/oauth2/google"
+	"github.com/sprungknoedl/whiskee/Godeps/_workspace/src/github.com/gorilla/context"
+	"github.com/sprungknoedl/whiskee/Godeps/_workspace/src/github.com/jmoiron/sqlx"
+	_ "github.com/sprungknoedl/whiskee/Godeps/_workspace/src/github.com/lib/pq"
 )
 
-var (
-	sso *oauth2.Config
-	db  *model.Model
-)
+var DB *sqlx.DB
 
 func main() {
-	var err error
 	port := os.Getenv("PORT")
-	base := os.Getenv("BASE_URL")
-
-	cid := os.Getenv("GOOGLE_CID")
-	secret := os.Getenv("GOOGLE_SECRET")
-	sso = &oauth2.Config{
-		ClientID:     cid,
-		ClientSecret: secret,
-		RedirectURL:  base + "/auth/google/callback",
-		Scopes:       []string{"openid", "email"},
-		Endpoint:     google.Endpoint,
-	}
-
-	key := os.Getenv("SESSION_SECRET")
-	store := sessions.NewCookieStore([]byte(key))
-
 	dburl := os.Getenv("DATABASE_URL")
-	if db, err = model.Connect(dburl); err != nil {
+
+	log.Printf("connecting to db: %s", dburl)
+	db, err := sqlx.Connect("postgres", dburl)
+	if err != nil {
 		log.Fatalf("failed to connect to db: %v", err)
 	}
 
-	router := gin.New()
-	router.Use(commonlog.New())
-	router.Use(cors.Default())
-	router.Use(sessions.Sessions("whiskee", store))
-	router.Use(gin.Recovery())
-	router.Use(gin.ErrorLogger())
-
-	router.Static("/assets", "assets")
-	router.SetHTMLTemplate(template.Must(template.New("views").
-		Funcs(template.FuncMap{
-		"humanizeTime": humanize.Time,
-	}).
-		ParseGlob("templates/*")))
-
-	router.GET("/", IndexR)
-	router.GET("/auth/google", GoogleAuthR)
-	router.GET("/auth/google/callback", GoogleCallbackR)
-
-	secured := router.Group("/", Secured)
-	secured.GET("/logout", LogoutR)
-
-	secured.GET("/feed", NewsFeedR)
-	secured.GET("/users", UsersR)
-	secured.GET("/search", SearchR)
-	secured.GET("/u/:id", ProfileR)
-
-	secured.GET("/friends", FriendsR)
-	secured.GET("/friends/add/:id", AddFriendR)
-	secured.GET("/friends/del/:id", DelFriendR)
-
-	secured.POST("/p", AddPostR)
-	secured.POST("/p/:id/comment", CommentR)
-	secured.GET("/p/:id/delete", DeletePostR)
-
-	secured.POST("/w", AddWhiskeyR)
-
-	router.Run(":" + port)
-}
-
-func IndexR(c *gin.Context) {
-	c.HTML(http.StatusOK, "index.html", gin.H{})
-}
-
-func NewsFeedR(c *gin.Context) {
-	principal := c.MustGet("user").(*model.User)
-
-	whiskeys, err := db.Whiskeys.All()
-	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
-		return
-	}
-
-	posts, err := db.Posts.GetNewsFeed(principal.ID, 50)
-	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
-		return
-	}
-
-	c.HTML(http.StatusOK, "dashboard.html", gin.H{
-		"principal": principal,
-		"whiskeys":  whiskeys,
-		"posts":     posts,
+	cid := os.Getenv("AUTH0_CID")
+	secret := os.Getenv("AUTH0_SECRET")
+	auth := jwtmiddleware.New(jwtmiddleware.Options{
+		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
+			decoded, err := base64.URLEncoding.DecodeString(secret)
+			if err != nil {
+				return nil, err
+			}
+			return decoded, nil
+		},
 	})
+
+	posts := PostCtrl{db}
+	whiskeys := WhiskeyCtrl{db}
+	principal := PrincipalCtrl{db}
+
+	r := gin.Default()
+	r.Static("/app", "app")
+	r.Static("/static", "static")
+	r.StaticFile("/", "app/index.html")
+
+	authorized := r.Group("/api")
+	authorized.Use(Secured(cid, auth))
+	{
+		authorized.GET("/posts", posts.All)
+		authorized.POST("/posts", posts.Create)
+		authorized.DELETE("/posts/:id", posts.Delete)
+
+		authorized.GET("/principal", principal.Get)
+		authorized.PUT("/principal", principal.Create)
+		authorized.POST("/principal", principal.Create)
+
+		authorized.GET("/whiskeys", whiskeys.All)
+	}
+
+	log.Printf("listening on :%s", port)
+	r.Run(":" + port)
 }
 
-func ProfileR(c *gin.Context) {
-	// principal := c.MustGet("user").(*model.User)
-	// id := c.Param("id")
+func Secured(aud string, auth *jwtmiddleware.JWTMiddleware) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		if err := auth.CheckJWT(c.Writer, c.Request); err != nil {
+			c.Abort()
+			return
+		}
 
-	// user, err := db.Users.Get(id)
-	// if err != nil {
-	// 	c.AbortWithError(http.StatusInternalServerError, err)
-	// 	return
-	// }
-	c.Redirect(http.StatusSeeOther, "/feed")
-}
+		token := context.Get(c.Request, auth.Options.UserProperty).(*jwt.Token)
+		if token.Claims["aud"].(string) != aud {
+			c.AbortWithStatus(http.StatusUnauthorized)
+			return
+		}
 
-type WhiskeyForm struct {
-	Distillery string  `form:"distillery"`
-	Name       string  `form:"name"`
-	Type       string  `form:"type"`
-	Age        int     `form:"age"`
-	ABV        float64 `form:"abv"`
-	Size       float64 `form:"size"`
-}
-
-func AddWhiskeyR(c *gin.Context) {
-	var form WhiskeyForm
-	if err := c.Bind(&form); err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
+		c.Set("user", token.Claims["sub"].(string))
+		c.Next()
 	}
-
-	whiskey := &model.Whiskey{
-		Distillery: form.Distillery,
-		Name:       form.Name,
-		Type:       form.Type,
-		Age:        form.Age,
-		ABV:        form.ABV,
-		Size:       form.Size,
-	}
-
-	if _, err := db.Whiskeys.Create(whiskey); err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
-		return
-	}
-
-	c.Redirect(http.StatusSeeOther, "/feed")
-}
-
-type PostForm struct {
-	Whiskey int    `form:"whiskey"`
-	Body    string `form:"body"`
-}
-
-func AddPostR(c *gin.Context) {
-	principal := c.MustGet("user").(*model.User)
-
-	var form PostForm
-	if err := c.Bind(&form); err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
-	}
-
-	post := &model.Post{
-		User:    principal,
-		Date:    time.Now(),
-		Whiskey: &model.Whiskey{ID: form.Whiskey},
-		Body:    form.Body,
-	}
-
-	if _, err := db.Posts.Create(post); err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
-		return
-	}
-
-	c.Redirect(http.StatusSeeOther, "/u/"+principal.ID)
-}
-
-func CommentR(c *gin.Context) {
-	c.Redirect(http.StatusSeeOther, "/feed")
-}
-
-func DeletePostR(c *gin.Context) {
-	param := c.Param("id")
-	id, err := strconv.Atoi(param)
-	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
-		return
-	}
-
-	if err := db.Posts.Delete(id); err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
-		return
-	}
-
-	c.Redirect(http.StatusSeeOther, "/feed")
 }

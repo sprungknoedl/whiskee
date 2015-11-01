@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>whiskee</title>
+
+	<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.4/semantic.min.css">
+	<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.4/components/accordion.min.css">
+	<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.4/components/ad.min.css">
+	<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.4/components/breadcrumb.min.css">
+	<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.4/components/button.min.css">
+	<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.4/components/card.min.css">
+	<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.4/components/checkbox.min.css">
+	<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.4/components/comment.min.css">
+	<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.4/components/container.min.css">
+	<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.4/components/dimmer.min.css">
+	<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.4/components/divider.min.css">
+	<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.4/components/dropdown.min.css">
+	<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.4/components/embed.min.css">
+	<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.4/components/feed.min.css">
+	<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.4/components/flag.min.css">
+	<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.4/components/form.min.css">
+	<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.4/components/grid.min.css">
+	<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.4/components/header.min.css">
+	<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.4/components/icon.min.css">
+	<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.4/components/image.min.css">
+	<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.4/components/input.min.css">
+	<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.4/components/item.min.css">
+	<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.4/components/label.min.css">
+	<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.4/components/list.min.css">
+	<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.4/components/loader.min.css">
+	<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.4/components/menu.min.css">
+	<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.4/components/message.min.css">
+	<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.4/components/modal.min.css">
+	<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.4/components/nag.min.css">
+	<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.4/components/popup.min.css">
+	<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.4/components/progress.min.css">
+	<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.4/components/rail.min.css">
+	<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.4/components/rating.min.css">
+	<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.4/components/reset.min.css">
+	<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.4/components/reveal.min.css">
+	<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.4/components/search.min.css">
+	<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.4/components/segment.min.css">
+	<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.4/components/shape.min.css">
+	<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.4/components/sidebar.min.css">
+	<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.4/components/site.min.css">
+	<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.4/components/statistic.min.css">
+	<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.4/components/step.min.css">
+	<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.4/components/sticky.min.css">
+	<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.4/components/tab.min.css">
+	<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.4/components/table.min.css">
+	<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.4/components/transition.min.css">
+	<link rel="stylesheet" href="//oss.maxcdn.com/semantic-ui/2.1.4/components/video.min.css">
+
+<!-- templates -->
+<script id="root-tpl" type="text/template">
+	<div class="ui container">
+		<div class="ui grid">
+			<div id="sidebar" class="three wide column"></div>
+			<div id="main" class="ten wide column"> </div>
+		</div>
+	</div>
+</script>
+
+<script id="home-tpl" type="text/template">
+<% if (app.Principal) { %>
+	<span>Hello <%= app.Principal.get('name') %></span>
+	<a class="ui button" onclick='app.Auth.logout()'>Logout</a>
+<% } else { %>
+	<a class="ui button login">Login</a>
+<% } %>
+
+<div id="form"></div>
+<div id="feed"></div>
+</script>
+
+<script id="whiskey-form-tpl" type="text/template">
+<h4 class="ui horizontal divider header">
+	<i class="tag icon"></i> Create Post
+</h4>
+
+<form class="ui form">
+	<div class="field">
+		<div class="ui fluid search selection dropdown">
+			<input name="whiskey" type="hidden">
+			<i class="dropdown icon"></i>
+			<div class="default text">Select Whiskey</div>
+			<div class="menu">
+				<% _.each(whiskeys, function(whiskey) { %>
+				<div class="item" data-value="<%= whiskey.id %>"><%= whiskey.distillery %> <%= whiskey.name %> <%= whiskey.age %>yr</div>
+				<% }); %>
+			</div>
+		</div>
+	</div>
+
+	<div class="field">
+		<textarea rows=3 name="body" placeholder="Share your experience"></textarea>
+	</div>
+	
+	<button class="ui button" type="submit"><i class="ui world icon"></i> Share</button>
+</form>
+</script>
+
+<script id="feed-tpl" type="text/template">
+<h4 class="ui horizontal divider header">
+	<i class="tag icon"></i> News Feed
+</h4>
+
+<div id="feed-items" class="ui relaxed items"></div>
+</script>
+
+<script id="feed-item-tpl" type="text/template">
+<div class="ui small image">
+	<img src="/static/img/<%= whiskey.id || 0 %>-thumb.jpg">
+</div>
+
+<div class="content">
+	<div class="meta">
+		<img class="ui avatar image" src="<%= user.picture %>" />
+		<strong><a href="/u/<%= user.id %>"><%= user.email %></a> created a post</strong>
+		&emsp;<%= date %>
+		&emsp;<i class="ui <%= security %> icon"></i> <%= security %>
+	</div>
+	<div class="header">
+		<a><%= whiskey.distillery %> <%= whiskey.name %> <%= whiskey.age %>yr</a>,
+		<%= whiskey.type %>,
+		<%= whiskey.abv %>%,
+		<%= whiskey.size %>l
+	</div>
+	<div class="description">
+		<%= body %>
+	</div>
+
+	<div class="meta">
+		<a><i class="ui comment icon"></i> Comment</a>
+		<a><i class="ui heart icon"></i> Like</a>
+		<a class="action-delete"><i class="ui trash icon"></i> Delete</a>
+	</div>
+</div>
+</script>
+
+	<!-- libraries -->
+	<script src="//cdn.auth0.com/js/lock-7.9.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.2.3/backbone.js"></script>
+	<script src="//marionettejs.com/downloads/backbone.marionette.js"></script>
+
+	<script src="//oss.maxcdn.com/semantic-ui/2.1.4/semantic.min.js"></script>
+	<script src="//oss.maxcdn.com/semantic-ui/2.1.4/components/accordion.min.js"></script>
+	<script src="//oss.maxcdn.com/semantic-ui/2.1.4/components/api.min.js"></script>
+	<script src="//oss.maxcdn.com/semantic-ui/2.1.4/components/checkbox.min.js"></script>
+	<script src="//oss.maxcdn.com/semantic-ui/2.1.4/components/colorize.min.js"></script>
+	<script src="//oss.maxcdn.com/semantic-ui/2.1.4/components/dimmer.min.js"></script>
+	<script src="//oss.maxcdn.com/semantic-ui/2.1.4/components/dropdown.min.js"></script>
+	<script src="//oss.maxcdn.com/semantic-ui/2.1.4/components/embed.min.js"></script>
+	<script src="//oss.maxcdn.com/semantic-ui/2.1.4/components/form.min.js"></script>
+	<script src="//oss.maxcdn.com/semantic-ui/2.1.4/components/modal.min.js"></script>
+	<script src="//oss.maxcdn.com/semantic-ui/2.1.4/components/nag.min.js"></script>
+	<script src="//oss.maxcdn.com/semantic-ui/2.1.4/components/popup.min.js"></script>
+	<script src="//oss.maxcdn.com/semantic-ui/2.1.4/components/progress.min.js"></script>
+	<script src="//oss.maxcdn.com/semantic-ui/2.1.4/components/rating.min.js"></script>
+	<script src="//oss.maxcdn.com/semantic-ui/2.1.4/components/search.min.js"></script>
+	<script src="//oss.maxcdn.com/semantic-ui/2.1.4/components/shape.min.js"></script>
+	<script src="//oss.maxcdn.com/semantic-ui/2.1.4/components/sidebar.min.js"></script>
+	<script src="//oss.maxcdn.com/semantic-ui/2.1.4/components/site.min.js"></script>
+	<script src="//oss.maxcdn.com/semantic-ui/2.1.4/components/state.min.js"></script>
+	<script src="//oss.maxcdn.com/semantic-ui/2.1.4/components/sticky.min.js"></script>
+	<script src="//oss.maxcdn.com/semantic-ui/2.1.4/components/tab.min.js"></script>
+	<script src="//oss.maxcdn.com/semantic-ui/2.1.4/components/transition.min.js"></script>
+	<script src="//oss.maxcdn.com/semantic-ui/2.1.4/components/video.min.js"></script>
+	<script src="//oss.maxcdn.com/semantic-ui/2.1.4/components/visibility.min.js"></script>
+	<script src="//oss.maxcdn.com/semantic-ui/2.1.4/components/visit.min.js"></script>
+
+	<!-- app -->
+	<script src="/app/model/post.js"></script>
+	<script src="/app/model/whiskey.js"></script>
+	<script src="/app/view/feed.js"></script>
+</head>
+<body>
+	<script src="/app/app.js"></script>
+</body>
+</html>

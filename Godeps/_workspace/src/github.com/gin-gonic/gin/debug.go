@@ -4,11 +4,18 @@
 
 package gin
 
-import "log"
+import (
+	"bytes"
+	"html/template"
+	"log"
+)
 
 func init() {
 	log.SetFlags(0)
 }
+
+// IsDebugging returns true if the framework is running in debug mode.
+// Use SetMode(gin.Release) to switch to disable the debug mode.
 func IsDebugging() bool {
 	return ginMode == debugCode
 }
@@ -21,13 +28,25 @@ func debugPrintRoute(httpMethod, absolutePath string, handlers HandlersChain) {
 	}
 }
 
+func debugPrintLoadTemplate(tmpl *template.Template) {
+	if IsDebugging() {
+		var buf bytes.Buffer
+		for _, tmpl := range tmpl.Templates() {
+			buf.WriteString("\t- ")
+			buf.WriteString(tmpl.Name())
+			buf.WriteString("\n")
+		}
+		debugPrint("Loaded HTML Templates (%d): \n%s\n", len(tmpl.Templates()), buf.String())
+	}
+}
+
 func debugPrint(format string, values ...interface{}) {
 	if IsDebugging() {
 		log.Printf("[GIN-debug] "+format, values...)
 	}
 }
 
-func debugPrintWARNING_New() {
+func debugPrintWARNINGNew() {
 	debugPrint(`[WARNING] Running in "debug" mode. Switch to "release" mode in production.
  - using env:	export GIN_MODE=release
  - using code:	gin.SetMode(gin.ReleaseMode)
@@ -35,7 +54,7 @@ func debugPrintWARNING_New() {
 `)
 }
 
-func debugPrintWARNING_SetHTMLTemplate() {
+func debugPrintWARNINGSetHTMLTemplate() {
 	debugPrint(`[WARNING] Since SetHTMLTemplate() is NOT thread-safe. It should only be called
 at initialization. ie. before any route is registered or the router is listening in a socket:
 
