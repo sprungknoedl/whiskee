@@ -28,6 +28,7 @@ type postEntity struct {
 	UserNick          string    `db:"user_nick"`
 	UserEMail         string    `db:"user_email"`
 	UserPicture       string    `db:"user_picture"`
+	UserCreated       time.Time `db:"user_created"`
 	WhiskeyID         int       `db:"whiskey_id"`
 	WhiskeyDistillery string    `db:"whiskey_distillery"`
 	WhiskeyName       string    `db:"whiskey_name"`
@@ -44,6 +45,7 @@ func (p postEntity) Post() Post {
 		Nick:    p.UserNick,
 		EMail:   p.UserEMail,
 		Picture: p.UserPicture,
+		Created: p.UserCreated,
 	}
 
 	whiskey := &Whiskey{
@@ -70,19 +72,13 @@ type PostCtrl struct {
 	db *sqlx.DB
 }
 
-// GET    /:type        -> All()
-// GET    /:type/:id    -> One(id)
-// POST   /:type        -> Create(entity)
-// PUT    /:type/:id    -> Update(id, entity)
-// DELETE /:type/:id    -> Delete(id)
-
-func (ctrl PostCtrl) All(c *gin.Context) {
+func (this PostCtrl) All(c *gin.Context) {
 	principal, _ := c.Get("user")
 
 	rows := make([]postEntity, 0)
-	ctrl.db.Select(&rows, `select 
+	this.db.Select(&rows, `select 
 	p.id as post_id, p.body as post_body, p.date as post_date, p.security as post_security,
-	u.id as user_id, u.name as user_name, u.nick as user_nick, u.email as user_email, u.picture as user_picture,
+	u.id as user_id, u.name as user_name, u.nick as user_nick, u.email as user_email, u.picture as user_picture, u.created as user_created,
 	w.id as whiskey_id, w.distillery as whiskey_distillery, w.name as whiskey_name,
 		w.type as whiskey_type, w.age as whiskey_age, w.abv as whiskey_abv, 
 		w.size as whiskey_size
@@ -120,21 +116,21 @@ func (ctrl PostCtrl) All(c *gin.Context) {
 	c.JSON(http.StatusOK, posts)
 }
 
-func (ctrl PostCtrl) Create(c *gin.Context) {
+func (this PostCtrl) Create(c *gin.Context) {
 	principal, _ := c.Get("user")
 
 	post := new(Post)
 	c.BindJSON(post)
 
 	var id int
-	ctrl.db.Get(&id, `insert into posts
+	this.db.Get(&id, `insert into posts
 	(body, date, security, user_id, whiskey_id)
 	values ($1, $2, $3, $4, $5) returning id`, post.Body, post.Date, post.Security, principal, post.Whiskey.ID)
 
 	var entity postEntity
-	ctrl.db.Get(&entity, `select 
+	this.db.Get(&entity, `select 
 	p.id as post_id, p.body as post_body, p.date as post_date, p.security as post_security,
-	u.id as user_id, u.name as user_name, u.nick as user_nick, u.email as user_email, u.picture as user_picture,
+	u.id as user_id, u.name as user_name, u.nick as user_nick, u.email as user_email, u.picture as user_picture, u.created as user_created,
 	w.id as whiskey_id, w.distillery as whiskey_distillery, w.name as whiskey_name,
 		w.type as whiskey_type, w.age as whiskey_age, w.abv as whiskey_abv, 
 		w.size as whiskey_size
@@ -147,10 +143,10 @@ func (ctrl PostCtrl) Create(c *gin.Context) {
 	c.JSON(http.StatusCreated, entity.Post())
 }
 
-func (ctrl PostCtrl) Delete(c *gin.Context) {
+func (this PostCtrl) Delete(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 	principal, _ := c.Get("user")
 
-	ctrl.db.Exec(`delete from posts where id = $1 and user_id = $2`, id, principal)
+	this.db.Exec(`delete from posts where id = $1 and user_id = $2`, id, principal)
 	c.Data(http.StatusNoContent, gin.MIMEJSON, nil)
 }

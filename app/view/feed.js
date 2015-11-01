@@ -12,6 +12,7 @@ var WhiskeyForm = Marionette.ItemView.extend({
 	},
 
 	onRender: function() { 
+		this.$('.checkbox').checkbox();
 		this.$('.dropdown').dropdown();
 	},
 
@@ -28,10 +29,11 @@ var WhiskeyForm = Marionette.ItemView.extend({
 
 		var body = this.$('[name=body]').val();
 		var whiskey = this.$('[name=whiskey]').val();
+		var security = this.$('[name=security]:checked').val();
 
 		this.posts.create({
 			body:     body,
-			security: 'public',
+			security: security,
 			date:     new Date(),
 			user:     app.Principal,
 			whiskey:  {id: +whiskey},
@@ -76,10 +78,6 @@ var HomeView = Marionette.LayoutView.extend({
 		feed:   '#feed',
 	},
 
-	events: {
-		'click .login': 'login',
-	},
-
 	initialize: function(options) {
 		this.posts = options.posts;
 		this.whiskeys = options.whiskeys;
@@ -89,8 +87,4 @@ var HomeView = Marionette.LayoutView.extend({
 		this.showChildView('form', new WhiskeyForm({ posts: this.posts, whiskeys: this.whiskeys }));
 		this.showChildView('feed', new FeedView({ model: this.posts, collection: this.posts }));
 	},
-
-	login: function(e) {
-		app.Auth.login();
-	}
 });

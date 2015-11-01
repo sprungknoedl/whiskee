@@ -10290,6 +10290,18 @@ i.icon.bed:before {
 /*******************************
          Site Overrides
 *******************************/
+
+i.icon.public:before {
+  content: "\f0ac";
+}
+
+i.icon.friends:before {
+  content: "\f0c0";
+}
+
+i.icon.private:before {
+  content: "\f023";
+}
 /*!
  * # Semantic UI 2.1.4 - Image
  * http://github.com/semantic-org/semantic-ui/

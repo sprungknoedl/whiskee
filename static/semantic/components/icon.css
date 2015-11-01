@@ -2585,3 +2585,12 @@ i.icon.bed:before {
          Site Overrides
 *******************************/
 
+i.icon.public:before {
+  content: "\f0ac";
+}
+i.icon.friends:before {
+  content: "\f0c0";
+}
+i.icon.private:before {
+  content: "\f023";
+}

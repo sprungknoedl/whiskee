@@ -39,8 +39,12 @@ func main() {
 	})
 
 	posts := PostCtrl{db}
-	whiskeys := WhiskeyCtrl{db}
+
 	principal := PrincipalCtrl{db}
+	friends := FriendsCtrl{db}
+
+	users := UserCtrl{db}
+	whiskeys := WhiskeyCtrl{db}
 
 	r := gin.Default()
 	r.Static("/app", "app")
@@ -56,7 +60,11 @@ func main() {
 
 		authorized.GET("/principal", principal.Get)
 		authorized.PUT("/principal", principal.Create)
-		authorized.POST("/principal", principal.Create)
+
+		authorized.GET("/principal/friends", friends.All)
+		authorized.PUT("/principal/friends/:id", friends.Create)
+
+		authorized.GET("/users", users.All)
 
 		authorized.GET("/whiskeys", whiskeys.All)
 	}

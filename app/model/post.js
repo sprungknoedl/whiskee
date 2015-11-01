@@ -1,6 +1,4 @@
-var PostModel = Backbone.Model.extend({
-	urlRoot: '/api/posts'
-});
+var PostModel = Backbone.Model.extend({});
 
 var PostCollection = Backbone.Collection.extend({
 	url: '/api/posts',

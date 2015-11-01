@@ -14,28 +14,34 @@
 	<script id="root-tpl" type="text/template">
 		<div class="ui container">
 			<div class="ui grid">
-				<div id="sidebar" class="three wide column"></div>
-				<div id="main" class="ten wide column"> </div>
+				<div class="three wide column"></div>
+				<div class="ten wide column">
+					<div id="nav"></div>
+					<div id="main"></div>
+				</div>
 			</div>
 		</div>
 	</script>
 
+	<script id="nav-tpl" type="text/template">
+		<div class="header item">whiskee</div>
+
+		<a href="#" class="item">Home</a>
+		<a href="#users" class="item">Users</a>
+
+		<div class="right menu">
+			<% if (auth) { %>
+				<a class="ui item" onclick='app.Auth.logout()'>
+				Bye, <%= name %> 
+				</a>
+			<% } else { %>
+				<a class="ui item login">Login</a>
+			<% } %>
+		</div>
+		</div>
+	</script>
+
 	<script id="home-tpl" type="text/template">
-	<div class="ui secondary menu">
-	<div class="header item">whiskee</div>
-	<a class="active item">
-		Home
-	</a>
-
-	<div class="right menu">
-		<% if (app.Principal) { %>
-			<a class="ui item" onclick='app.Auth.logout()'>Logout</a>
-		<% } else { %>
-			<a class="ui item login">Login</a>
-		<% } %>
-	</div>
-	</div>
-
 	<div id="form"></div>
 	<div id="feed"></div>
 	</script>
@@ -63,6 +69,28 @@
 			<div class="field">
 				<textarea rows=3 name="body" placeholder="Share your experience"></textarea>
 			</div>
+
+			<div class="inline fields">
+				<label for="fruit">Visibility:</label>
+				<div class="field">
+					<div class="ui radio checkbox">
+						<input class="hidden" tabindex="0" type="radio" name="security" value="public">
+						<label><i class="ui public icon"></i> Public</label>
+					</div>
+				</div>
+				<div class="field">
+					<div class="ui radio checkbox">
+						<input class="hidden" tabindex="0" type="radio" name="security" value="friends" checked>
+						<label><i class="ui friends icon"></i> Friends</label>
+					</div>
+				</div>
+				<div class="field">
+					<div class="ui radio checkbox">
+						<input class="hidden" tabindex="0" type="radio" name="security" value="private">
+						<label><i class="ui private icon"></i> Private</label>
+					</div>
+				</div>
+			</div>
 			
 			<button class="ui button" type="submit"><i class="ui world icon"></i> Share</button>
 		</form>
@@ -83,7 +111,7 @@
 	<div class="content">
 		<div class="meta">
 			<img class="ui avatar image" src="<%= user.picture %>" />
-			<strong><a href="/u/<%= user.id %>"><%= user.email %></a> created a post</strong>
+			<strong><a href="/u/<%= user.id %>"><%= user.name %></a> created a post</strong>
 			&emsp;<%= moment(date).fromNow() %>
 			&emsp;<i class="ui <%= security %> icon"></i> <%= security %>
 		</div>
@@ -98,10 +126,29 @@
 		</div>
 
 		<div class="meta">
-			<a><i class="ui comment icon"></i> Comment</a>
-			<a><i class="ui heart icon"></i> Like</a>
 			<a class="action-delete"><i class="ui trash icon"></i> Delete</a>
 		</div>
+	</div>
+	</script>
+
+	<script id="single-user-tpl" type="text/template">
+		<div class="ui tiny image">
+			<img src="<%= picture %>">
+		</div>
+		<div class="content">
+			<a class="header"><%= name %></a>
+			<div class="meta">
+				<span class="date">joined <%= moment(created).fromNow() %></span>
+			</div>
+			<div class="meta">
+				<a class="action-friend"><i class="ui heart icon"></i> Add Friend</a>
+			</div>
+		</div>
+	</script>
+
+	<script id="users-tpl" type="text/template">
+	<div class="ui basic segment">
+		<div id="child-view" class="ui items"></div>
 	</div>
 	</script>
 
@@ -116,8 +163,12 @@
 
 	<!-- app -->
 	<script src="/app/model/post.js"></script>
+	<script src="/app/model/user.js"></script>
 	<script src="/app/model/whiskey.js"></script>
+
 	<script src="/app/view/feed.js"></script>
+	<script src="/app/view/users.js"></script>
+
 	<script src="/app/app.js"></script>
 </body>
 </html>
