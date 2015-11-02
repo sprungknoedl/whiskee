@@ -4,6 +4,10 @@ var PrincipalModel = Backbone.Model.extend({
 	url: '/api/principal',
 	defaults: {
 		auth: false,
+	},
+
+	is: function(user) {
+		return (this.get('id') === user.id);
 	}
 })
 
@@ -64,21 +68,31 @@ var Auth = Marionette.Object.extend({
 })
 
 var RootView = Marionette.LayoutView.extend({
-	el: '#body',
+	el: 'body',
 	template: '#root-tpl',
 
 	regions: {
-		nav:  '#nav',
-		main: '#main',
+		nav:     '#nav',
+		main:    '#main',
+		sidebar: '#sidebar'
 	},
+});
+
+var SidebarView = Marionette.ItemView.extend({
+	template:  '#views-sidebar',
+	className: 'ui large visible sidebar inverted vertical menu',
+
+	initialize: function() {
+		this.listenTo(this.model, 'change sync', this.render);
+	}
 });
 
 var NavView = Marionette.ItemView.extend({
 	template:  '#nav-tpl',
-	className: 'ui secondary menu',
+	className: 'ui top fixed inverted teal menu',
 
 	initialize: function() {
-		this.listenTo(app.Principal, 'change sync', this.render);
+		this.listenTo(this.model, 'change sync', this.render);
 	},
 
 	events: {
@@ -93,42 +107,42 @@ var NavView = Marionette.ItemView.extend({
 var WhiskeyFormModel = Backbone.Model.extend({
 	fetch: function() {
 		return $.when(
-				this.get('posts').fetch(), 
+				this.get('posts').fetch(),
 				this.get('whiskeys').fetch());
 	}
 });
 
-app.Controller = {
-	home: function() {
-		var posts = new PostCollection(); posts.fetch();
-		var whiskeys = new WhiskeyCollection(); whiskeys.fetch();
-
-		app.Root.showChildView('main', new HomeView({ posts: posts, whiskeys: whiskeys }));
-	},
-
-	users: function() {
-		var users = new UserCollection(); users.fetch();
-		app.Root.showChildView('main', new UsersView({ collection: users }));
-	}
-}
-
-app.Router = new Marionette.AppRouter({
-	controller: app.Controller,
-	appRoutes: {
-		'':      'home',
-		'users': 'users'
-	},
-});
-
-app.Root = new RootView();
-app.Principal = new PrincipalModel();
-app.Auth = new Auth({route: ''});
-
 $(function() {
-	app.start();
+	app.Controller = {
+		home: function() {
+			var posts = new PostCollection(); posts.fetch();
+			var whiskeys = new WhiskeyCollection(); whiskeys.fetch();
+
+			app.Root.showChildView('main', new HomeView({ posts: posts, whiskeys: whiskeys }));
+		},
+
+		users: function() {
+			var users = new UserCollection(); users.fetch();
+			app.Root.showChildView('main', new UsersView({ collection: users }));
+		}
+	};
+
+	app.Router = new Marionette.AppRouter({
+		controller: app.Controller,
+		appRoutes: {
+			'':      'home',
+			'users': 'users'
+		},
+	});
+
+	app.Root = new RootView();
+	app.Principal = new PrincipalModel();
+	app.Auth = new Auth({route: ''});
+
 	app.Root.render();
 	app.Root.showChildView('nav', new NavView( {model: app.Principal} ));
+	app.Root.showChildView('sidebar', new SidebarView( {model: app.Principal} ));
 
+	app.start();
 	Backbone.history.start();
 });
-

@@ -6,169 +6,177 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>whiskee</title>
 	<link rel="stylesheet" href="/static/semantic/semantic.min.css">
+
+  <!-- templates -->
+  <script type="text/template" id="root-tpl">
+    <div id="sidebar"></div>
+    <nav id="nav"></nav>
+
+  	<div style="margin-left: 18rem; margin-top: 60px">
+  		<div id="main"></div>
+  	</div>
+  </script>
+  <script type="text/template" id="views-sidebar">
+    <div class="header item" style="height: 60px; background-color: #00B5AD; display: flex; align-items: center;">whiskee</div>
+
+    <div class="item" style="text-align: center;">
+  		<% if (auth) { %>
+      <img class="ui small centered circular image" src="<%= picture %>" />
+      <strong><%= name %></strong><br />
+      <small>joined <%= moment(created).fromNow() %></small>
+      <% } %>
+    </div>
+
+    <!-- <a class="item">1</a>
+    <a class="item">2</a>
+    <a class="item">3</a> -->
+  </script>
+  <script type="text/template" id="nav-tpl">
+    <div class="item" style="height: 60px; width: 18rem;"></div> <!-- pseudo item for sidebar -->
+    <div class="item" style="padding: 0; padding-left: 1px;"></div> <!-- pseudo item for border -->
+
+		<a href="#" title="Messages" class="item"><i class="ui comment icon"></i></a>
+		<a href="#users" title="Users" class="item"><i class="ui users icon"></i></a>
+
+	  <div class="right menu">
+  		<% if (auth) { %>
+  			<a class="ui item" onclick='app.Auth.logout()'>
+    			<strong>Logout</strong>
+  			</a>
+  		<% } else { %>
+  			<a class="ui item login">
+          <strong>Login</strong>
+        </a>
+  		<% } %>
+    </div>
+  </script>
+  <script type="text/template" id="home-tpl">
+    <div id="form"></div>
+    <div id="feed"></div>
+  </script>
+  <script type="text/template" id="whiskey-form-tpl">
+    <div class="ui basic segment">
+    	<div class="ui inverted dimmer">
+    		<div class="ui indeterminate text loader">Sharing Post</div>
+    	</div>
+
+    	<form class="ui form">
+    		<div class="field">
+    			<div class="ui fluid search selection dropdown">
+    				<input name="whiskey" type="hidden">
+    				<i class="dropdown icon"></i>
+    				<div class="default text">Select Whiskey</div>
+    				<div class="menu">
+    					<% _.each(whiskeys, function(whiskey) { %>
+    					<div class="item" data-value="<%= whiskey.id %>"><%= whiskey.distillery %> <%= whiskey.name %> <%= whiskey.age %>yr</div>
+    					<% }); %>
+    				</div>
+    			</div>
+    		</div>
+
+    		<div class="field">
+    			<textarea rows=3 name="body" placeholder="Share your experience"></textarea>
+    		</div>
+
+    		<div class="inline fields">
+    			<label for="fruit">Visibility:</label>
+    			<div class="field">
+    				<div class="ui radio checkbox">
+    					<input class="hidden" tabindex="0" type="radio" name="security" value="public">
+    					<label><i class="ui public icon"></i> Public</label>
+    				</div>
+    			</div>
+    			<div class="field">
+    				<div class="ui radio checkbox">
+    					<input class="hidden" tabindex="0" type="radio" name="security" value="friends" checked>
+    					<label><i class="ui friends icon"></i> Friends</label>
+    				</div>
+    			</div>
+    			<div class="field">
+    				<div class="ui radio checkbox">
+    					<input class="hidden" tabindex="0" type="radio" name="security" value="private">
+    					<label><i class="ui private icon"></i> Private</label>
+    				</div>
+    			</div>
+    		</div>
+
+    		<button class="ui button" type="submit">Share</button>
+    	</form>
+    </div>
+  </script>
+  <script type="text/template" id="feed-tpl">
+    <div class="ui basic segment">
+    <div id="feed-items" class="ui relaxed items"></div>
+    </div>
+  </script>
+  <script type="text/template" id="feed-item-tpl">
+    <div class="ui small image">
+    	<img src="/static/img/<%= whiskey.id || 0 %>-thumb.jpg">
+    </div>
+
+    <div class="content">
+    	<div class="meta">
+    		<img class="ui avatar image" src="<%= user.picture %>" />
+    		<strong><a href="/u/<%= user.id %>"><%= user.name %></a> created a post</strong>
+    		&emsp;<%= moment(date).fromNow() %>
+    		&emsp;<i class="ui <%= security %> icon"></i> <%= security %>
+    	</div>
+    	<div class="header">
+    		<a><%= whiskey.distillery %> <%= whiskey.name %> <%= whiskey.age %>yr</a>,
+    		<%= whiskey.type %>,
+    		<%= whiskey.abv %>%,
+    		<%= whiskey.size %>l
+    	</div>
+    	<div class="description">
+    		<%= body %>
+    	</div>
+
+      <% if (app.Principal.is(user)) { %>
+    	<div class="meta">
+    		<a class="action-delete"><i class="ui trash icon"></i> Delete</a>
+    	</div>
+      <% } %>
+    </div>
+  </script>
+  <script type="text/template" id="single-user-tpl">
+  	<div class="ui tiny image">
+  		<img src="<%= picture %>">
+  	</div>
+  	<div class="content">
+  		<a class="header"><%= name %></a>
+  		<div class="meta">
+  			<span class="date">joined <%= moment(created).fromNow() %></span>
+  		</div>
+  		<div class="meta">
+  			<a class="action-friend"><i class="ui heart icon"></i> Add Friend</a>
+  		</div>
+  	</div>
+  </script>
+  <script type="text/template" id="users-tpl">
+    <div class="ui basic segment">
+    	<div id="child-view" class="ui items"></div>
+    </div>
+  </script>
 </head>
+
 <body>
-	<div id="body"></div>
+  <!-- libraries -->
+  <script src="/static/js/lock.min.js"></script>
+  <script src="/static/js/moment.min.js"></script>
+  <script src="/static/js/jquery.min.js"></script>
+  <script src="/static/js/underscore.min.js"></script>
+  <script src="/static/js/backbone.min.js"></script>
+  <script src="/static/js/backbone.marionette.min.js"></script>
+  <script src="/static/semantic/semantic.min.js"></script>
 
-	<!-- templates -->
-	<script id="root-tpl" type="text/template">
-		<div class="ui container">
-			<div class="ui grid">
-				<div class="three wide column"></div>
-				<div class="ten wide column">
-					<div id="nav"></div>
-					<div id="main"></div>
-				</div>
-			</div>
-		</div>
-	</script>
+  <!-- app -->
+  <script src="/app/model/post.js"></script>
+  <script src="/app/model/user.js"></script>
+  <script src="/app/model/whiskey.js"></script>
 
-	<script id="nav-tpl" type="text/template">
-		<div class="header item">whiskee</div>
+  <script src="/app/view/feed.js"></script>
+  <script src="/app/view/users.js"></script>
 
-		<a href="#" class="item">Home</a>
-		<a href="#users" class="item">Users</a>
-
-		<div class="right menu">
-			<% if (auth) { %>
-				<a class="ui item" onclick='app.Auth.logout()'>
-				Bye, <%= name %> 
-				</a>
-			<% } else { %>
-				<a class="ui item login">Login</a>
-			<% } %>
-		</div>
-		</div>
-	</script>
-
-	<script id="home-tpl" type="text/template">
-	<div id="form"></div>
-	<div id="feed"></div>
-	</script>
-
-	<script id="whiskey-form-tpl" type="text/template">
-	<div class="ui basic segment">
-		<div class="ui inverted dimmer">
-			<div class="ui indeterminate text loader">Sharing Post</div>
-		</div>
-
-		<form class="ui form">
-			<div class="field">
-				<div class="ui fluid search selection dropdown">
-					<input name="whiskey" type="hidden">
-					<i class="dropdown icon"></i>
-					<div class="default text">Select Whiskey</div>
-					<div class="menu">
-						<% _.each(whiskeys, function(whiskey) { %>
-						<div class="item" data-value="<%= whiskey.id %>"><%= whiskey.distillery %> <%= whiskey.name %> <%= whiskey.age %>yr</div>
-						<% }); %>
-					</div>
-				</div>
-			</div>
-
-			<div class="field">
-				<textarea rows=3 name="body" placeholder="Share your experience"></textarea>
-			</div>
-
-			<div class="inline fields">
-				<label for="fruit">Visibility:</label>
-				<div class="field">
-					<div class="ui radio checkbox">
-						<input class="hidden" tabindex="0" type="radio" name="security" value="public">
-						<label><i class="ui public icon"></i> Public</label>
-					</div>
-				</div>
-				<div class="field">
-					<div class="ui radio checkbox">
-						<input class="hidden" tabindex="0" type="radio" name="security" value="friends" checked>
-						<label><i class="ui friends icon"></i> Friends</label>
-					</div>
-				</div>
-				<div class="field">
-					<div class="ui radio checkbox">
-						<input class="hidden" tabindex="0" type="radio" name="security" value="private">
-						<label><i class="ui private icon"></i> Private</label>
-					</div>
-				</div>
-			</div>
-			
-			<button class="ui button" type="submit"><i class="ui world icon"></i> Share</button>
-		</form>
-	</div>
-	</script>
-
-	<script id="feed-tpl" type="text/template">
-	<div class="ui basic segment">
-	<div id="feed-items" class="ui relaxed items"></div>
-	</div>
-	</script>
-
-	<script id="feed-item-tpl" type="text/template">
-	<div class="ui small image">
-		<img src="/static/img/<%= whiskey.id || 0 %>-thumb.jpg">
-	</div>
-
-	<div class="content">
-		<div class="meta">
-			<img class="ui avatar image" src="<%= user.picture %>" />
-			<strong><a href="/u/<%= user.id %>"><%= user.name %></a> created a post</strong>
-			&emsp;<%= moment(date).fromNow() %>
-			&emsp;<i class="ui <%= security %> icon"></i> <%= security %>
-		</div>
-		<div class="header">
-			<a><%= whiskey.distillery %> <%= whiskey.name %> <%= whiskey.age %>yr</a>,
-			<%= whiskey.type %>,
-			<%= whiskey.abv %>%,
-			<%= whiskey.size %>l
-		</div>
-		<div class="description">
-			<%= body %>
-		</div>
-
-		<div class="meta">
-			<a class="action-delete"><i class="ui trash icon"></i> Delete</a>
-		</div>
-	</div>
-	</script>
-
-	<script id="single-user-tpl" type="text/template">
-		<div class="ui tiny image">
-			<img src="<%= picture %>">
-		</div>
-		<div class="content">
-			<a class="header"><%= name %></a>
-			<div class="meta">
-				<span class="date">joined <%= moment(created).fromNow() %></span>
-			</div>
-			<div class="meta">
-				<a class="action-friend"><i class="ui heart icon"></i> Add Friend</a>
-			</div>
-		</div>
-	</script>
-
-	<script id="users-tpl" type="text/template">
-	<div class="ui basic segment">
-		<div id="child-view" class="ui items"></div>
-	</div>
-	</script>
-
-	<!-- libraries -->
-	<script src="/static/js/lock.min.js"></script>
-	<script src="/static/js/moment.min.js"></script>
-	<script src="/static/js/jquery.min.js"></script>
-	<script src="/static/js/underscore.min.js"></script>
-	<script src="/static/js/backbone.min.js"></script>
-	<script src="/static/js/backbone.marionette.min.js"></script>
-	<script src="/static/semantic/semantic.min.js"></script>
-
-	<!-- app -->
-	<script src="/app/model/post.js"></script>
-	<script src="/app/model/user.js"></script>
-	<script src="/app/model/whiskey.js"></script>
-
-	<script src="/app/view/feed.js"></script>
-	<script src="/app/view/users.js"></script>
-
-	<script src="/app/app.js"></script>
+  <script src="/app/app.js"></script>
 </body>
 </html>
