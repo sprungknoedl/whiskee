@@ -12,14 +12,14 @@
     <div id="sidebar"></div>
     <nav id="nav"></nav>
 
-  	<div style="margin-left: 18rem; margin-top: 60px">
+  	<div style="margin-left: 18rem; margin-top: 80px">
   		<div id="main"></div>
   	</div>
   </script>
   <script type="text/template" id="views-sidebar">
-    <div class="header item" style="height: 60px; background-color: #00B5AD; display: flex; align-items: center;">whiskee</div>
+    <div class="header blue item" style="height: 60px; display: flex; align-items: center;">whiskee</div>
 
-    <div class="item" style="text-align: center;">
+    <div class="profile item" style="text-align: center;">
   		<% if (auth) { %>
       <img class="ui small centered circular image" src="<%= picture %>" />
       <strong><%= name %></strong><br />
@@ -41,11 +41,11 @@
 	  <div class="right menu">
   		<% if (auth) { %>
   			<a class="ui item" onclick='app.Auth.logout()'>
-    			<strong>Logout</strong>
+    			<strong><i class="ui sign out icon"></i> Logout</strong>
   			</a>
   		<% } else { %>
   			<a class="ui item login">
-          <strong>Login</strong>
+          <strong><i class="ui sign in icon"></i> Login</strong>
         </a>
   		<% } %>
     </div>
@@ -55,7 +55,7 @@
     <div id="feed"></div>
   </script>
   <script type="text/template" id="whiskey-form-tpl">
-    <div class="ui basic segment">
+    <div class="ui segment">
     	<div class="ui inverted dimmer">
     		<div class="ui indeterminate text loader">Sharing Post</div>
     	</div>
@@ -100,12 +100,12 @@
     			</div>
     		</div>
 
-    		<button class="ui button" type="submit">Share</button>
+    		<button class="ui blue button" type="submit">Share</button>
     	</form>
     </div>
   </script>
   <script type="text/template" id="feed-tpl">
-    <div class="ui basic segment">
+    <div class="ui segment">
     <div id="feed-items" class="ui relaxed items"></div>
     </div>
   </script>
@@ -153,7 +153,7 @@
   	</div>
   </script>
   <script type="text/template" id="users-tpl">
-    <div class="ui basic segment">
+    <div class="ui segment">
     	<div id="child-view" class="ui items"></div>
     </div>
   </script>

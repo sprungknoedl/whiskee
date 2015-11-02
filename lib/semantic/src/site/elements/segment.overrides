@@ -1,3 +1,9 @@
 /*******************************
          Site Overrides
 *******************************/
+.ui.segment:first-child {
+  margin-top: @margin;
+}
+.ui.segment:last-child {
+  margin-bottom: @margin;
+}

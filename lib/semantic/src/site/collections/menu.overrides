@@ -1,3 +1,10 @@
 /*******************************
          Site Overrides
 *******************************/
+.ui.inverted.menu .item.header.blue {
+  background-color: @blue;
+}
+
+.ui.menu .item.profile {
+  line-height: 1.3;
+}

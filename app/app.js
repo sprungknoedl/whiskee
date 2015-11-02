@@ -89,7 +89,7 @@ var SidebarView = Marionette.ItemView.extend({
 
 var NavView = Marionette.ItemView.extend({
 	template:  '#nav-tpl',
-	className: 'ui top fixed inverted teal menu',
+	className: 'ui top fixed inverted blue menu',
 
 	initialize: function() {
 		this.listenTo(this.model, 'change sync', this.render);

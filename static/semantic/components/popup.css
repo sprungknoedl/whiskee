@@ -297,7 +297,7 @@
 
 /* Inverted colors  */
 .ui.inverted.popup {
-  background: #1B1C1D;
+  background: #1f201a;
   color: #FFFFFF;
   border: none;
   box-shadow: none;
@@ -307,7 +307,7 @@
   color: #FFFFFF;
 }
 .ui.inverted.popup:before {
-  background-color: #1B1C1D;
+  background-color: #1f201a;
   box-shadow: none !important;
 }
 
