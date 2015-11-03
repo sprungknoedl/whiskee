@@ -67,6 +67,7 @@ func main() {
 		authorized.GET("/users", users.All)
 
 		authorized.GET("/whiskeys", whiskeys.All)
+		authorized.POST("/whiskeys", whiskeys.Create)
 	}
 
 	log.Printf("listening on :%s", port)

@@ -11,10 +11,10 @@
   <script type="text/template" id="root-tpl">
     <div id="sidebar"></div>
     <nav id="nav"></nav>
+  	<div id="main" class="main wrapper"></div>
 
-  	<div class="main wrapper">
-  		<div id="main"></div>
-  	</div>
+    <div id="modals-area"></div>
+    <div class="ui small modal" id="modal"></div>
   </script>
   <script type="text/template" id="views-sidebar">
     <a href="#" class="profile item">
@@ -83,7 +83,7 @@
     				</div>
     			</div>
 
-          <small class="muted text">Your whiskey is not yet in this list? You can add it <a href="#">here</a>.</small>
+          <small class="muted text">Your whiskey is not yet in this list? You can add it <a id="action-add-whiskey" href="#">here</a>.</small>
     		</div>
 
     		<div class="field">
@@ -112,10 +112,77 @@
     			</div>
     		</div>
 
-    		<button class="ui blue button" type="submit">Share</button>
+    		<button class="ui blue button" type="submit">
+          <i class="send icon"></i>
+          Share
+        </button>
     	</form>
     </div>
   </script>
+
+  <script type="text/template" id="views-home-add-whiskey">
+    <div class="content">
+      <h4>Add Whiskey</h4>
+
+    	<form class="ui form">
+    		<div class="field">
+          <label>Distillery</label>
+          <input name="distillery" placeholder="Distillery" type="text">
+    		</div>
+
+    		<div class="field">
+          <label>Name</label>
+          <input name="name" placeholder="Name" type="text">
+    		</div>
+
+    		<div class="field">
+          <label>Type</label>
+    			<div class="ui fluid selection dropdown">
+    				<input name="type" type="hidden">
+    				<i class="dropdown icon"></i>
+    				<div class="default text">Select Whiskey Type</div>
+    				<div class="menu">
+    					<div class="item" data-value="Single Malt">Single Malt</div>
+    				</div>
+    			</div>
+    		</div>
+
+        <div class="three fields">
+      		<div class="field">
+            <label>Age</label>
+            <div class="ui right labeled input">
+              <input name="age" placeholder="Age" type="number">
+              <div class="ui basic label">yr</div>
+      		  </div>
+      		</div>
+
+      		<div class="field">
+            <label>ABV</label>
+            <div class="ui right labeled input">
+              <input name="abv" placeholder="ABV" type="number">
+              <div class="ui basic label">%</div>
+            </div>
+      		</div>
+
+      		<div class="field">
+            <label>Size</label>
+            <div class="ui right labeled input">
+              <input name="size" placeholder="Size" type="number">
+              <div class="ui basic label">l</div>
+      		  </div>
+      		</div>
+        </div>
+      </form>
+    </div>
+    <div class="actions">
+      <div class="ui deny button"> Cancel </div>
+      <div class="ui approve blue button">
+        <i class="save icon"></i>
+        Save
+      </div>
+    </div>
+  </script>
+
   <script type="text/template" id="feed-tpl">
     <div class="ui segment">
       <h4>Your news feed</h4>
@@ -183,6 +250,8 @@
   <script src="/static/js/lock.min.js"></script>
   <script src="/static/js/moment.min.js"></script>
   <script src="/static/js/jquery.min.js"></script>
+  <script src="/static/js/jquery.serialize-object.js"></script>
+
   <script src="/static/js/underscore.min.js"></script>
   <script src="/static/js/backbone.min.js"></script>
   <script src="/static/js/backbone.marionette.min.js"></script>
@@ -193,7 +262,7 @@
   <script src="/app/model/user.js"></script>
   <script src="/app/model/whiskey.js"></script>
 
-  <script src="/app/view/feed.js"></script>
+  <script src="/app/view/home.js"></script>
   <script src="/app/view/users.js"></script>
 
   <script src="/app/app.js"></script>

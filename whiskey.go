@@ -27,3 +27,16 @@ func (ctrl WhiskeyCtrl) All(c *gin.Context) {
 
 	c.JSON(http.StatusOK, whiskeys)
 }
+
+func (this WhiskeyCtrl) Create(c *gin.Context) {
+	whiskey := new(Whiskey)
+	c.BindJSON(whiskey)
+
+	this.db.Get(&whiskey.ID, `insert into whiskeys
+	(distillery, name, type, age, abv, size)
+	values ($1, $2, $3, $4, $5, $6) returning id`,
+	whiskey.Distillery, whiskey.Name, whiskey.Type, whiskey.Age, whiskey.ABV,
+	whiskey.Size)
+
+	c.JSON(http.StatusCreated, whiskey)
+}

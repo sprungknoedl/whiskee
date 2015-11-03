@@ -69,13 +69,16 @@ var Auth = Marionette.Object.extend({
 
 var RootView = Marionette.LayoutView.extend({
 	el: 'body',
+	className: 'ui pusher dimmer page transition',
 	template: '#root-tpl',
 
 	regions: {
 		nav:     '#nav',
 		main:    '#main',
-		sidebar: '#sidebar'
+		sidebar: '#sidebar',
+		modals:  '#modals-area'
 	},
+
 });
 
 var SidebarView = Marionette.ItemView.extend({
