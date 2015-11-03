@@ -1,3 +1,11 @@
 /*******************************
          Site Overrides
 *******************************/
+.main.wrapper {
+  margin-left: @sidebarWidth;
+  margin-top:  @menuHeight + 20px;
+}
+
+.muted.text {
+  color: @grey;
+}

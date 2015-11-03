@@ -5,7 +5,9 @@
 /*-------------------
         Page
 --------------------*/
-@pageBackground      : #4f5042;
+@pageBackground  : #4f5042;
+@menuHeight      : 60px;
+@sidebarWidth    : 18rem;
 
 /*-------------------
       Site Colors

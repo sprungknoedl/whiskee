@@ -80,10 +80,18 @@ var RootView = Marionette.LayoutView.extend({
 
 var SidebarView = Marionette.ItemView.extend({
 	template:  '#views-sidebar',
-	className: 'ui large visible sidebar inverted vertical menu',
+	className: 'ui overlay sidebar inverted vertical menu',
 
 	initialize: function() {
 		this.listenTo(this.model, 'change sync', this.render);
+	},
+
+	onRender: function() {
+		this.$el.sidebar('setting', {
+			dimPage:  false,
+			closable: false
+		});
+		this.$el.sidebar('show');
 	}
 });
 
@@ -137,11 +145,13 @@ $(function() {
 
 	app.Root = new RootView();
 	app.Principal = new PrincipalModel();
+	app.VisibleUser = app.Principal;
+
 	app.Auth = new Auth({route: ''});
 
 	app.Root.render();
 	app.Root.showChildView('nav', new NavView( {model: app.Principal} ));
-	app.Root.showChildView('sidebar', new SidebarView( {model: app.Principal} ));
+	app.Root.showChildView('sidebar', new SidebarView( {model: app.VisibleUser} ));
 
 	app.start();
 	Backbone.history.start();

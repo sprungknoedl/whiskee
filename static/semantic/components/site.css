@@ -159,3 +159,10 @@ input::selection {
          Site Overrides
 *******************************/
 
+.main.wrapper {
+  margin-left: 18rem;
+  margin-top: 80px;
+}
+.muted.text {
+  color: #767676;
+}

@@ -12,42 +12,51 @@
     <div id="sidebar"></div>
     <nav id="nav"></nav>
 
-  	<div style="margin-left: 18rem; margin-top: 80px">
+  	<div class="main wrapper">
   		<div id="main"></div>
   	</div>
   </script>
   <script type="text/template" id="views-sidebar">
-    <div class="header blue item" style="height: 60px; display: flex; align-items: center;">whiskee</div>
-
-    <div class="profile item" style="text-align: center;">
+    <a href="#" class="profile item">
   		<% if (auth) { %>
       <img class="ui small centered circular image" src="<%= picture %>" />
+
       <strong><%= name %></strong><br />
       <small>joined <%= moment(created).fromNow() %></small>
       <% } %>
-    </div>
+    </a>
 
-    <!-- <a class="item">1</a>
-    <a class="item">2</a>
-    <a class="item">3</a> -->
+    <a class="item"><i class="ui paw icon"></i> Profile</a>
+    <a class="item"><i class="ui send icon"></i> Posts</a>
+    <a class="item"><i class="ui users icon"></i> Friends</a>
+    <a class="item"><i class="ui privacy icon"></i> Privacy</a>
+    <a class="item"><i class="ui settings icon"></i> Settings</a>
   </script>
   <script type="text/template" id="nav-tpl">
-    <div class="item" style="height: 60px; width: 18rem;"></div> <!-- pseudo item for sidebar -->
-    <div class="item" style="padding: 0; padding-left: 1px;"></div> <!-- pseudo item for border -->
-
+    <a href="#" title="Profile" class="header item">whiskee</a>
 		<a href="#" title="Messages" class="item"><i class="ui comment icon"></i></a>
-		<a href="#users" title="Users" class="item"><i class="ui users icon"></i></a>
+		<a href="#users" title="Friends" class="item"><i class="ui users icon"></i></a>
+
+    <div class="ui search item">
+        <div class="ui icon input">
+          <input class="prompt" placeholder="Find friends" type="text">
+          <i class="search icon"></i>
+        </div>
+        <div class="results"></div>
+    </div>
 
 	  <div class="right menu">
-  		<% if (auth) { %>
-  			<a class="ui item" onclick='app.Auth.logout()'>
-    			<strong><i class="ui sign out icon"></i> Logout</strong>
-  			</a>
-  		<% } else { %>
-  			<a class="ui item login">
-          <strong><i class="ui sign in icon"></i> Login</strong>
-        </a>
-  		<% } %>
+		<% if (auth) { %>
+      <a title="Privacy" class="item"><i class="ui privacy icon"></i></a>
+      <a title="Settings" class="item"><i class="ui settings icon"></i></a>
+			<a class="ui item" onclick='app.Auth.logout()'>
+  			<strong><i class="ui sign out icon"></i> Logout</strong>
+			</a>
+		<% } else { %>
+			<a class="ui item login">
+        <strong><i class="ui sign in icon"></i> Login</strong>
+      </a>
+		<% } %>
     </div>
   </script>
   <script type="text/template" id="home-tpl">
@@ -56,6 +65,7 @@
   </script>
   <script type="text/template" id="whiskey-form-tpl">
     <div class="ui segment">
+      <h4>Share your experience</h4>
     	<div class="ui inverted dimmer">
     		<div class="ui indeterminate text loader">Sharing Post</div>
     	</div>
@@ -72,6 +82,8 @@
     					<% }); %>
     				</div>
     			</div>
+
+          <small class="muted text">Your whiskey is not yet in this list? You can add it <a href="#">here</a>.</small>
     		</div>
 
     		<div class="field">
@@ -106,7 +118,8 @@
   </script>
   <script type="text/template" id="feed-tpl">
     <div class="ui segment">
-    <div id="feed-items" class="ui relaxed items"></div>
+      <h4>Your news feed</h4>
+      <div id="feed-items" class="ui relaxed items"></div>
     </div>
   </script>
   <script type="text/template" id="feed-item-tpl">
@@ -154,6 +167,12 @@
   </script>
   <script type="text/template" id="users-tpl">
     <div class="ui segment">
+      <h4>Friend Requests</h4>
+      <div class="centered">No new requests.</div>
+    </div>
+
+    <div class="ui segment">
+      <h4>Friends</h4>
     	<div id="child-view" class="ui items"></div>
     </div>
   </script>

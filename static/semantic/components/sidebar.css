@@ -627,3 +627,10 @@ html.ios body {
          Site Overrides
 *******************************/
 
+.ui.sidebar {
+  top: 60px;
+}
+.ui.left.sidebar,
+.ui.right.sidebar {
+  width: 18rem;
+}

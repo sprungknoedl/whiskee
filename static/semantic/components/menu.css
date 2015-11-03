@@ -1981,9 +1981,11 @@ Floated Menu / Item
          Site Overrides
 *******************************/
 
-.ui.inverted.menu .item.header.blue {
-  background-color: #042948;
+.ui.menu .profile.item {
+  text-align: center;
+  line-height: 1.5;
 }
-.ui.menu .item.profile {
-  line-height: 1.3;
+.ui.menu .header.item {
+  height: 60px;
+  width: 18rem;
 }
