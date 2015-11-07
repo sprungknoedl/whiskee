@@ -14,7 +14,7 @@
   	<div id="main" class="main wrapper"></div>
 
     <div id="modals-area"></div>
-    <div class="ui small modal" id="modal"></div>
+    <div class="ui modal" id="modal"></div>
   </script>
   <script type="text/template" id="views-sidebar">
     <a href="#" class="profile item">
@@ -124,7 +124,14 @@
     <div class="content">
       <h4>Add Whiskey</h4>
 
+      <div class="description">
     	<form class="ui form">
+
+    		<div class="field">
+          <label>Image</label>
+          <input type="file" name="picture" multiple="multiple" />
+        </div>
+
     		<div class="field">
           <label>Distillery</label>
           <input name="distillery" placeholder="Distillery" type="text">
@@ -173,6 +180,8 @@
       		</div>
         </div>
       </form>
+      </div>
+
     </div>
     <div class="actions">
       <div class="ui deny button"> Cancel </div>
@@ -191,7 +200,7 @@
   </script>
   <script type="text/template" id="feed-item-tpl">
     <div class="ui small image">
-    	<img src="/static/img/<%= whiskey.id || 0 %>-thumb.jpg">
+    	<img src="<%= whiskey.thumb %>">
     </div>
 
     <div class="content">
@@ -251,6 +260,7 @@
   <script src="/static/js/moment.min.js"></script>
   <script src="/static/js/jquery.min.js"></script>
   <script src="/static/js/jquery.serialize-object.js"></script>
+  <script src='/static/js/jquery.transloadit.js'></script>
 
   <script src="/static/js/underscore.min.js"></script>
   <script src="/static/js/backbone.min.js"></script>

@@ -36,6 +36,8 @@ type postEntity struct {
 	WhiskeyAge        int       `db:"whiskey_age"`
 	WhiskeyABV        float64   `db:"whiskey_abv"`
 	WhiskeySize       float64   `db:"whiskey_size"`
+	WhiskeyPicture    string    `db:"whiskey_picture"`
+	WhiskeyThumb      string    `db:"whiskey_thumb"`
 }
 
 func (p postEntity) Post() Post {
@@ -56,6 +58,8 @@ func (p postEntity) Post() Post {
 		Age:        p.WhiskeyAge,
 		ABV:        p.WhiskeyABV,
 		Size:       p.WhiskeySize,
+		Picture:    p.WhiskeyPicture,
+		Thumb:      p.WhiskeyThumb,
 	}
 
 	return Post{
@@ -76,12 +80,12 @@ func (this PostCtrl) All(c *gin.Context) {
 	principal, _ := c.Get("user")
 
 	rows := make([]postEntity, 0)
-	this.db.Select(&rows, `select 
+	this.db.Select(&rows, `select
 	p.id as post_id, p.body as post_body, p.date as post_date, p.security as post_security,
 	u.id as user_id, u.name as user_name, u.nick as user_nick, u.email as user_email, u.picture as user_picture, u.created as user_created,
 	w.id as whiskey_id, w.distillery as whiskey_distillery, w.name as whiskey_name,
-		w.type as whiskey_type, w.age as whiskey_age, w.abv as whiskey_abv, 
-		w.size as whiskey_size
+		w.type as whiskey_type, w.age as whiskey_age, w.abv as whiskey_abv,
+		w.size as whiskey_size, w.picture as whiskey_picture, w.thumb as whiskey_thumb
 
 	from posts p
 	join users u on u.id = p.user_id
@@ -93,13 +97,13 @@ func (this PostCtrl) All(c *gin.Context) {
 			where p.user_id = $1) or
 
 		-- select public posts of my friends
-		p.id in (select p.id from posts p 
+		p.id in (select p.id from posts p
 			join friends f on p.user_id = f.b
 			where (f.a = $1 and p.security = 'public')) or
 
 		-- select private posts of my friends
 		p.id in (with mutual as (
-				select b as id from friends where a = $1 intersect 
+				select b as id from friends where a = $1 intersect
 				select a as id from friends where b = $1)
 			select p.id from posts p
 			join mutual m on m.id = p.user_id
@@ -128,12 +132,12 @@ func (this PostCtrl) Create(c *gin.Context) {
 	values ($1, $2, $3, $4, $5) returning id`, post.Body, post.Date, post.Security, principal, post.Whiskey.ID)
 
 	var entity postEntity
-	this.db.Get(&entity, `select 
+	this.db.Get(&entity, `select
 	p.id as post_id, p.body as post_body, p.date as post_date, p.security as post_security,
 	u.id as user_id, u.name as user_name, u.nick as user_nick, u.email as user_email, u.picture as user_picture, u.created as user_created,
 	w.id as whiskey_id, w.distillery as whiskey_distillery, w.name as whiskey_name,
-		w.type as whiskey_type, w.age as whiskey_age, w.abv as whiskey_abv, 
-		w.size as whiskey_size
+		w.type as whiskey_type, w.age as whiskey_age, w.abv as whiskey_abv,
+		w.size as whiskey_size, w.picture as whiskey_picture, w.thumb as whiskey_thumb
 
 	from posts p
 	join users u on u.id = p.user_id
