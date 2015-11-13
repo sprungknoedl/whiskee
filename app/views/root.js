@@ -1,24 +1,26 @@
-define(function(require) {
-  var Marionette = require('marionette'),
-      NavigationView = require('views/navigation'),
-      SidebarView = require('views/sidebar'),
-      App = require('app');
+var $ = require('jquery'),
+    Marionette = require('backbone.marionette');
 
-	return Marionette.LayoutView.extend({
-		el: 'body',
-		className: 'ui pusher dimmer page transition',
-		template: '#root-tpl',
+var View = Marionette.LayoutView.extend({
+  el: 'body',
+  template: require('./templates/root.html'),
+  regions: {
+    content:    '#content',
+    navigation: '#navigation',
+    sidebar:    '#sidebar',
+  },
 
-		regions: {
-			nav:     '#nav',
-			main:    '#main',
-			sidebar: '#sidebar',
-			modals:  '#modals-area'
-		},
+  initialize: function() {
+    this.render();
+  },
 
-    onRender: function() {
-      this.showChildView('nav', new NavigationView());
-      this.showChildView('sidebar', new SidebarView());
-    }
-	});
-})
+  showModal: function(view, options) {
+    var el = $("#modal");
+    el.html(view.render().el);
+    el.modal(options);
+
+    view.triggerMethod('attach');
+  }
+});
+
+module.exports = View;

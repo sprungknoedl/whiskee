@@ -1,0 +1,32 @@
+<div class="panel panel-default">
+  <div class="panel-body text-center">
+  <% if (auth) { %>
+    <img src="<%- picture %>" class="img-circle">
+    <p style="margin: 5px"><strong><%- name %></strong></p>
+    <p>joined <%- moment(created).fromNow() %>.</p>
+  <% } %>
+  </div>
+</div>
+
+<div class="list-group">
+  <a href="#" class="list-group-item">
+    <span class="badge"><i class="fa fa-paw"></i></span>
+    Profile
+  </a>
+  <a href="#" class="list-group-item">
+    <span class="badge"><i class="fa fa-send"></i></span>
+    Posts
+  </a>
+  <a href="#friends" class="list-group-item">
+    <span class="badge"><i class="fa fa-users"></i></span>
+    Friends
+  </a>
+  <a href="#" class="list-group-item">
+    <span class="badge"><i class="fa fa-key"></i></span>
+    Privacy
+  </a>
+  <a href="#" class="list-group-item">
+    <span class="badge"><i class="fa fa-gears"></i></span>
+    Settings
+  </a>
+</div>

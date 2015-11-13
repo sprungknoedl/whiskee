@@ -1,23 +1,28 @@
-define(function(require) {
-  var App = require('app'),
-      Auth = require('controller/auth'),
-      Marionette = require('marionette');
+var Marionette = require('backbone.marionette');
 
-	return Marionette.ItemView.extend({
-		template:  '#nav-tpl',
-		className: 'ui top fixed inverted blue menu',
+var View = Marionette.ItemView.extend({
+  template: require('./templates/navigation.html'),
+  events: {
+    'click .login': 'login',
+    'click .logout': 'logout'
+  },
 
-		events: {
-			'click .login': 'login',
-			'click .logout': 'logout'
-		},
+  initialize: function(options) {
+    this.router = options.app.router;
+    this.model = options.principal;
+    
+    this.listenTo(this.model, 'change sync', this.render);
+  },
 
-		initialize: function() {
-      this.model = App.Principal;
-			this.listenTo(this.model, 'change sync', this.render);
-		},
+  login: function(e) {
+    e.preventDefault();
+    this.router.login();
+  },
 
-		login: function(e) { Auth.login(); },
-		logout: function(e) { Auth.logout(); }
-	});
-})
+  logout: function(e) {
+    e.preventDefault();
+    this.router.logout();
+  }
+});
+
+module.exports = View;

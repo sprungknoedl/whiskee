@@ -124,15 +124,24 @@ func (this PostCtrl) Create(c *gin.Context) {
 	principal, _ := c.Get("user")
 
 	post := new(Post)
-	c.BindJSON(post)
+	err := c.BindJSON(post)
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
 
 	var id int
-	this.db.Get(&id, `insert into posts
+	err = this.db.Get(&id, `insert into posts
 	(body, date, security, user_id, whiskey_id)
-	values ($1, $2, $3, $4, $5) returning id`, post.Body, post.Date, post.Security, principal, post.Whiskey.ID)
+	values ($1, now(), $2, $3, $4) returning id`,
+		post.Body, post.Security, principal, post.Whiskey.ID)
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
 
 	var entity postEntity
-	this.db.Get(&entity, `select
+	err = this.db.Get(&entity, `select
 	p.id as post_id, p.body as post_body, p.date as post_date, p.security as post_security,
 	u.id as user_id, u.name as user_name, u.nick as user_nick, u.email as user_email, u.picture as user_picture, u.created as user_created,
 	w.id as whiskey_id, w.distillery as whiskey_distillery, w.name as whiskey_name,
@@ -144,6 +153,11 @@ func (this PostCtrl) Create(c *gin.Context) {
 	join whiskeys w on w.id = p.whiskey_id
 
 	where p.id = $1`, id)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
 	c.JSON(http.StatusCreated, entity.Post())
 }
 

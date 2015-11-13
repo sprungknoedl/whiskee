@@ -1,0 +1,40 @@
+<div class="panel panel-default">
+  <div class="panel-body">
+    <p><strong>Share your experience</strong></p>
+    <form>
+      <div class="form-group">
+        <select name="whiskey" class="form-control selectpicker" data-live-search=true>
+          <% _.each(whiskeys, function(item){ %>
+            <option value="<%= item.id %>"><%= item.distillery %> <%= item.name %> <%= item.age %>yr</option>
+          <% }) %>
+        </select>
+        <span class="help-block">Your whiskey is not yet in this list? You can add it <a href="" id="add-whiskey">here</a>.</span>
+      </div>
+
+      <div class="form-group">
+        <textarea name="body" placeholder="Share your experience "class="form-control" rows="3"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="radio-inline">
+          <input type="radio" name="security" value="public"> <i class="fa fa-globe"></i> Public
+        </label>
+        <label class="radio-inline">
+          <input type="radio" name="security" value="friends" checked> <i class="fa fa-users"></i> Friends
+        </label>
+        <label class="radio-inline">
+          <input type="radio" name="security" value="private"> <i class="fa fa-lock"></i> Private
+        </label>
+      </div>
+
+      <button type="submit" class="btn btn-sm btn-primary"><i class="fa fa-send"></i> Share</button>
+
+  </div>
+</div>
+
+<div class="panel panel-default">
+  <div class="panel-body">
+    <p><strong>Your news feed</strong></p>
+    <div id="child-view"></div>
+  </div>
+  </div>
