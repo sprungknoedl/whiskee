@@ -1,0 +1,91 @@
+{{ template "header" . }}
+
+<section>
+	<div class='pure-g'>
+		<div class='pure-u-1'>
+			<h4 class='title'>Activity</h4>
+		</div>
+
+		{{ range .Activity }}
+		<div class='pure-u-1 pure-u-md-1-4'>
+		<a href='/whisky/{{ .Whisky.ID }}' class='card'>
+			<div class='card-image'>
+				{{ if .Whisky.Thumbnail }}
+				<img width=100% src='{{ .Whisky.Thumbnail }}' />
+				{{ else }}
+				<img width=100% src='/static/img/placeholder.jpg' />
+				{{ end }}
+			</div>
+
+			<div class='card-content'>
+				<strong>{{ .Whisky.Distillery }} {{ .Whisky.Name }} {{ .Whisky.Age }}yr</strong>
+				<span class='muted'>
+				<div class='raty-ro' data-value='{{ .Whisky.Rating }}'></div>
+				from {{ .Whisky.Ratings }} users
+				</span>
+			</div>
+
+			<div class='card-avatar'><img alt='{{ .User.Name }}' title='{{ .User.Name }}' src='{{ .User.Picture }}' /></div>
+		</a>
+		</div>
+		{{ end }}
+
+		<!--
+		<div class='pure-u-1 pure-u-md-1-8'>
+			<a href='/' class='card card-btn'>
+				<span class='full'>View more ...</span>
+			</a>
+		</div>
+		-->
+	<div>
+</section>
+
+<section>
+	<div class='pure-g'>
+		<div class='pure-u-1'>
+			<h4 class='title'>Trending</h4>
+		</div>
+
+		{{ range .Trending }}
+		<div class='pure-u-1 pure-u-md-1-4'>
+		<a href='/whisky/{{ .ID }}' class='card'>
+			<div class='card-image card-image-crop'>
+				{{ if .Thumbnail }}
+				<img src='{{ .Thumbnail }}' />
+				{{ else }}
+				<img width=100% src='/static/img/placeholder.jpg' />
+				{{ end }}
+			</div>
+
+			<div class='card-content'>
+				<strong>{{ .Distillery }} {{ .Name }} {{ .Age }}yr</strong>
+				<span class='muted'>
+				<div class='raty-ro' data-value='{{ .Rating }}'></div>
+				from {{ .Ratings }} users
+				</span>
+			</div>
+		</a>
+		</div>
+		{{ end }}
+
+		<!--
+		<div class='pure-u-1 pure-u-md-1-8'>
+			<a href='/' class='card card-btn'>
+				<span class='full'>View more ...</span>
+			</a>
+		</div>
+		-->
+
+	<div>
+</section>
+
+<script type="text/javascript">
+$(function(){
+	$('.raty-ro').raty({
+		score: function(){ return $(this).attr('data-value') },
+		readOnly: true
+	})
+});
+</script>
+
+{{ template "footer" . }}

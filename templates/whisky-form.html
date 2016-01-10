@@ -1,0 +1,102 @@
+{{ template "header" . }}
+
+<form class="pure-form pure-form-stacked" method="post" enctype="multipart/form-data">
+<input name='id' value='{{ .Form.ID }}' hidden>
+<input name='picture' value='{{ .Form.Picture }}' hidden>
+<input name='thumbnail' value='{{ .Form.Thumbnail }}' hidden>
+
+<div class='pure-g'>
+	<div class='pure-u-1 pure-u-md-1-2'>
+		<h4 class='subtitle'>{{ .Action }} Whisky</h4>
+
+		<label>
+			Type <small>(*)</small>
+			<span class='error'>{{ index .Errors "type" }}</span>
+		</label>
+		<select class='pure-u-1' name='type' required>
+			<option>Single Malt Whisky</option>
+			<option>Blended Malt Whisky</option>
+			<option>Blended Whisky</option>
+			<option>Grain Whisky</option>
+			<option>Bourbon Whiskey</option>
+			<option>Tennesse Whiskey</option>
+			<option>Rye Whiskey</option>
+			<option>Corn Whiskey</option>
+			<option>Wheat Whiskey</option>
+		</select>
+
+		<label>
+			Distillery <small>(*)</small>
+			<span class='error'>{{ index .Errors "distillery" }}</span>
+		</label>
+		<input class='pure-u-1' name='distillery' value='{{ .Form.Distillery }}' required>
+
+		<label>
+			Name
+			<span class='error'>{{ index .Errors "name" }}</span>
+		</label>
+		<input class='pure-u-1' name='name' value='{{ .Form.Name }}'>
+
+		<div class='pure-g'>
+			<div class='pure-u-1-2' style='padding-bottom: 0'>
+				<label>
+					Age <small>(*)</small>
+					<span class='error'>{{ index .Errors "age" }}</span>
+				</label>
+				<input class='pure-u-1' name='age' type='number' value='{{ .Form.Age }}' required>
+			</div>
+
+			<div class='pure-u-1-2' style='padding-bottom: 0'>
+				<label>
+					ABV
+					<span class='error'>{{ index .Errors "abv" }}</span>
+				</label>
+				<input class='pure-u-1' name='abv' type='number' value='{{ .Form.ABV }}'>
+			</div>
+		</div>
+
+		<label>
+			Description
+			<span class='error'>{{ index .Errors "description" }}</span>
+		</label>
+		<textarea class='pure-u-1' name='description' rows=15>{{ .Form.Description }}</textarea>
+	</div>
+
+	<div class='pure-u-1 pure-u-md-1-2'>
+		<h4 class='subtitle'>Upload New Image</h4>
+		<p> <input name="file" type="file" accept="image/*"> </p>
+
+		<h4 class='subtitle'>Current Image</h4>
+		{{ if .Form.Picture }}
+		<img id='picture-preview' width=50% src='{{ .Form.Picture }}' />
+		{{ else }}
+		<img id='picture-preview' width=50% src='/static/img/placeholder.jpg' />
+		{{ end }}
+	</div>
+
+	<div class='pure-u-1'>
+		<button type='submit' class='pure-button pure-button-primary'>Submit</button>
+		<button class='pure-button' onclick='window.history.back()'>Cancel</button>
+		<small>(*) Required</small>
+	</div>
+</div>
+</form>
+
+<script>
+function readURL(input) {
+	if (input.files && input.files[0]) {
+		var reader = new FileReader();
+		reader.onload = function (e) {
+			$('#picture-preview').attr('src', e.target.result);
+		}
+
+		reader.readAsDataURL(input.files[0]);
+	}
+}
+
+$(function() {
+	$("[name=file]").change(function(){ readURL(this) });
+})
+</script>
+
+{{ template "footer" . }}

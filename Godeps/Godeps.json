@@ -1,15 +1,23 @@
 {
 	"ImportPath": "github.com/sprungknoedl/whiskee",
-	"GoVersion": "go1.5.1",
+	"GoVersion": "go1.5",
 	"Deps": [
 		{
-			"ImportPath": "github.com/auth0/go-jwt-middleware",
-			"Rev": "8c897f7c3631a9e9405b9496fd8ce241acdef230"
+			"ImportPath": "github.com/boj/redistore",
+			"Comment": "v1-9-g9c0e6ba",
+			"Rev": "9c0e6bab4dd444285424f189b8fb0cb03f653242"
 		},
 		{
-			"ImportPath": "github.com/dgrijalva/jwt-go",
-			"Comment": "v2.3.0-6-gf62f64e",
-			"Rev": "f62f64ea222e5e6d6d86421b5507b0862a3ebf7f"
+			"ImportPath": "github.com/garyburd/redigo/internal",
+			"Rev": "836b6e58b3358112c8291565d01c35b8764070d7"
+		},
+		{
+			"ImportPath": "github.com/garyburd/redigo/redis",
+			"Rev": "836b6e58b3358112c8291565d01c35b8764070d7"
+		},
+		{
+			"ImportPath": "github.com/gin-gonic/contrib/sessions",
+			"Rev": "14f66d54cdb96059bafca98665bcc6d9df4951f2"
 		},
 		{
 			"ImportPath": "github.com/gin-gonic/gin",
@@ -21,14 +29,22 @@
 			"Rev": "1c83b3eabd45b6d76072b66b746c20815fb2872d"
 		},
 		{
+			"ImportPath": "github.com/gorilla/securecookie",
+			"Rev": "e95799a481bbcc3d01c2ad5178524cb8bec9f370"
+		},
+		{
+			"ImportPath": "github.com/gorilla/sessions",
+			"Rev": "99b16d2edd22458c541b3640ce83689b08a05c20"
+		},
+		{
 			"ImportPath": "github.com/jmoiron/sqlx",
-			"Comment": "sqlx-v1.1-45-g3a92b1f",
-			"Rev": "3a92b1fd96032c4490fa618370fbf98ec69b680c"
+			"Comment": "sqlx-v1.1-53-g54aec3f",
+			"Rev": "54aec3fd91a2b2129ffaca0d652b8a9223ee2d9e"
 		},
 		{
 			"ImportPath": "github.com/lib/pq",
-			"Comment": "go1.0-cutoff-60-gffe986a",
-			"Rev": "ffe986aba3e6cfcded8b06615965941408891ef0"
+			"Comment": "go1.0-cutoff-63-g11fc39a",
+			"Rev": "11fc39a580a008f1f39bb3d11d984fb34ed778d9"
 		},
 		{
 			"ImportPath": "github.com/manucorporat/sse",
@@ -36,16 +52,42 @@
 		},
 		{
 			"ImportPath": "github.com/mattn/go-colorable",
-			"Rev": "40e4aedc8fabf8c23e040057540867186712faa5"
+			"Rev": "3dac7b4f76f6e17fb39b768b89e3783d16e237fe"
+		},
+		{
+			"ImportPath": "github.com/mattn/go-isatty",
+			"Rev": "56b76bdf51f7708750eac80fa38b952bb9f32639"
+		},
+		{
+			"ImportPath": "github.com/mitchellh/go-homedir",
+			"Rev": "d682a8f0cf139663a984ff12528da460ca963de9"
+		},
+		{
+			"ImportPath": "github.com/transloadit/go-sdk",
+			"Comment": "v0.1.9",
+			"Rev": "535a38a0e8e534cbd43a041541ab3d80a8667529"
 		},
 		{
 			"ImportPath": "golang.org/x/net/context",
-			"Rev": "47990a1ba55743e6ef1affd3a14e5bac8553615d"
+			"Rev": "548f7bf20c8aae87fecd9aa09cc89065451e6271"
+		},
+		{
+			"ImportPath": "golang.org/x/oauth2",
+			"Rev": "2baa8a1b9338cf13d9eeb27696d761155fa480be"
+		},
+		{
+			"ImportPath": "golang.org/x/sys/unix",
+			"Rev": "833a04a10549a95dc34458c195cbad61bbb6cb4d"
 		},
 		{
 			"ImportPath": "gopkg.in/bluesuncorp/validator.v5",
 			"Comment": "v5.12",
 			"Rev": "d5acf1dac43705f8bfbb71d878e290e2bed3950b"
+		},
+		{
+			"ImportPath": "gopkg.in/fsnotify.v1",
+			"Comment": "v1.2.5",
+			"Rev": "2cdd39bd6129c6a49c74fb07fb9d77ba1271c572"
 		}
 	]
 }

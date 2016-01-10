@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/sprungknoedl/whiskee/Godeps/_workspace/src/github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin"
 )
 
 var DB = make(map[string]string)

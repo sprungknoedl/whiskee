@@ -22,7 +22,7 @@ import (
 	"time"
 	"unicode"
 
-	"github.com/sprungknoedl/whiskee/Godeps/_workspace/src/github.com/lib/pq/oid"
+	"github.com/lib/pq/oid"
 )
 
 // Common error types
@@ -557,13 +557,15 @@ func (cn *conn) simpleQuery(q string) (res *rows, err error) {
 				cn.bad = true
 				errorf("unexpected message %q in simple query execution", t)
 			}
-			res = &rows{
-				cn:       cn,
-				colNames: st.colNames,
-				colTyps:  st.colTyps,
-				colFmts:  st.colFmts,
-				done:     true,
+			if res == nil {
+				res = &rows{
+					cn:       cn,
+					colNames: st.colNames,
+					colTyps:  st.colTyps,
+					colFmts:  st.colFmts,
+				}
 			}
+			res.done = true
 		case 'Z':
 			cn.processReadyForQuery(r)
 			// done
