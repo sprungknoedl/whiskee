@@ -71,32 +71,6 @@ func Transloadit() gin.HandlerFunc {
 	}
 }
 
-func MockDatabase() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		db := MockStore{}
-
-		c.Set(UserStoreKey, db)
-		c.Set(WhiskyStoreKey, db)
-		c.Set(ReviewStoreKey, db)
-		c.Next()
-	}
-}
-
-func PostgresDatabase() gin.HandlerFunc {
-	url := os.Getenv("DATABASE_URL")
-	store, err := NewPostgresStore(url)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return func(c *gin.Context) {
-		c.Set(UserStoreKey, store)
-		c.Set(WhiskyStoreKey, store)
-		c.Set(ReviewStoreKey, store)
-		c.Next()
-	}
-}
-
 func GetUser(c *gin.Context) User {
 	session := sessions.Default(c)
 	if obj := session.Get("user"); obj != nil {

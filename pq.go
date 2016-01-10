@@ -3,10 +3,28 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"log"
+	"os"
 
+	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 )
+
+func PostgresDatabase() gin.HandlerFunc {
+	url := os.Getenv("DATABASE_URL")
+	store, err := NewPostgresStore(url)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return func(c *gin.Context) {
+		c.Set(UserStoreKey, store)
+		c.Set(WhiskyStoreKey, store)
+		c.Set(ReviewStoreKey, store)
+		c.Next()
+	}
+}
 
 type PostgresStore struct {
 	getUser    *sqlx.Stmt
