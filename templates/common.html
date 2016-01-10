@@ -42,7 +42,7 @@
 
 			function signin() {
 				lock.show({
-					callbackURL: 'http://localhost:3000/auth/callback',
+					callbackURL: window.location.origin + '/auth/callback',
 					responseType: 'code',
 					authParams: {scope: 'openid profile' }
 				});
