@@ -8,14 +8,15 @@
 				<input type='hidden' name='id' value='{{ .Form.ID }}'>
 				<input type='hidden' name='whisky' value='{{ .Form.WhiskyID }}'>
 
-				<label class='sr-only'>Stars</label>
+				<label>Stars <small>(*)</small> </label>
 				<div class='raty' data-name='rating' data-value='{{ .Form.Rating }}'></div>
 
-				<label class='sr-only'>Experience</label>
+				<label>Experience</label>
 				<textarea class="pure-u-1" name='description'>{{ .Form.Description }}</textarea>
 
 				<button class='pure-button pure-button-primary'>Submit</button>
 				<button class='pure-button' onclick='window.history.back()'>Cancel</button>
+				<small>(*) Required</small>
 			</form>
 			</div>
 		</div>

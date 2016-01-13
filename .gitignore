@@ -1,4 +1,5 @@
 # Heroku specific files
 .env
+run.sh
 db/dbconf.yml
 whiskee

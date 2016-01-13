@@ -18,6 +18,9 @@ type User struct {
 	Name    string `db:"name"`
 	Email   string `db:"email"`
 	Picture string `db:"picture"`
+
+	Ratings int `db:"ratings"`
+	Reviews int `db:"reviews"`
 }
 
 func (u User) Authenticated() bool {
@@ -61,6 +64,7 @@ var (
 
 type UserStore interface {
 	GetUser(int) (User, error)
+	GetAllUser() ([]User, error)
 	SaveUser(User) (User, error)
 }
 

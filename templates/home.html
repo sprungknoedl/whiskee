@@ -9,7 +9,7 @@
 		{{ range .Activity }}
 		<div class='pure-u-1 pure-u-md-1-4'>
 		<a href='/whisky/{{ .Whisky.ID }}' class='card'>
-			<div class='card-image'>
+			<div class='card-image card-image-zoom'>
 				{{ if .Whisky.Thumbnail }}
 				<img width=100% src='{{ .Whisky.Thumbnail }}' />
 				{{ else }}
@@ -25,7 +25,7 @@
 				</span>
 			</div>
 
-			<div class='card-avatar'><img alt='{{ .User.Name }}' title='{{ .User.Name }}' src='{{ .User.Picture }}' /></div>
+			<div class='card-badge avatar'><img alt='{{ .User.Name }}' title='{{ .User.Name }}' src='{{ .User.Picture }}' /></div>
 		</a>
 		</div>
 		{{ end }}
@@ -49,7 +49,7 @@
 		{{ range .Trending }}
 		<div class='pure-u-1 pure-u-md-1-4'>
 		<a href='/whisky/{{ .ID }}' class='card'>
-			<div class='card-image card-image-crop'>
+			<div class='card-image card-image-zoom'>
 				{{ if .Thumbnail }}
 				<img src='{{ .Thumbnail }}' />
 				{{ else }}

@@ -62,7 +62,7 @@ body {
 	line-height: 8em;
 }
 
-.card-avatar {
+.card-badge.avatar {
 	position: absolute;
 	right: .5em;
 	bottom: .5em;
@@ -72,7 +72,7 @@ body {
 	width: 2.5em;
 }
 
-.card-avatar img {
+.card-badge.avatar img {
 	height: 100%;
 	width: 100%;
 	border-radius: 50%;
@@ -86,17 +86,28 @@ body {
 	line-height: 1.3;
 }
 
-.card-image {
+.card-image.card-image-zoom {
 	display: inline-block;
 	width: 8em; min-width: 8em;
 	height: 8em;
 	overflow: hidden;
 }
 
-.card-image img {
+.card-image.card-image-zoom img {
 	width: 12em;
 	height: 12em;
 	margin: -2em 0 0 -2em;
+}
+
+.card-image.card-image-round {
+	display: inline-block;
+	margin: 1em;
+}
+
+.card-image.card-image-round img {
+	width: 6em;
+	height: 6em;
+	border-radius: 50%;
 }
 
 .text-center { text-align: center; }

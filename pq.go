@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
 	"os"
@@ -28,7 +27,7 @@ func PostgresDatabase() gin.HandlerFunc {
 
 type PostgresStore struct {
 	getUser    *sqlx.Stmt
-	findUser   *sqlx.Stmt
+	getAllUser *sqlx.Stmt
 	insertUser *sqlx.NamedStmt
 
 	getWhisky         *sqlx.Stmt
@@ -61,19 +60,37 @@ func NewPostgresStore(url string) (*PostgresStore, error) {
 		return nil, fmt.Errorf("sql get user: %v", err)
 	}
 
-	store.findUser, err = db.Preparex(`
-		SELECT * 
+	store.getAllUser, err = db.Preparex(`
+		SELECT
+			users.*,
+			COUNT(reviews.*) as ratings,
+			COUNT(NULLIF(reviews.description, '')) as reviews
 		FROM users
-		WHERE auth0 = $1`)
+		LEFT JOIN reviews ON users.id = reviews.user_id
+		GROUP BY users.id
+		ORDER BY name`)
 	if err != nil {
-		return nil, fmt.Errorf("sql find user: %v", err)
+		return nil, fmt.Errorf("sql get all user: %v", err)
 	}
 
 	store.insertUser, err = db.PrepareNamed(`
 		INSERT 
-		INTO users (auth0, name, email, picture)
-		VALUES (:auth0, :name, :email, :picture)
-		RETURNING id`)
+		INTO users (
+			auth0,
+			name,
+			email,
+			picture)
+		VALUES (
+			:auth0,
+			:name,
+			:email,
+			:picture)
+		ON CONFLICT (auth0) DO
+		UPDATE SET
+			name = :name,
+			email = :email,
+			picture = :picture
+		RETURNING *`)
 	if err != nil {
 		return nil, fmt.Errorf("sql insert user: %v", err)
 	}
@@ -195,13 +212,14 @@ func (store PostgresStore) GetUser(id int) (User, error) {
 	return user, err
 }
 
-func (store PostgresStore) SaveUser(entity User) (User, error) {
-	err := store.findUser.Get(&entity, entity.Auth0)
-	if (err != nil && err != sql.ErrNoRows) || entity.ID != 0 {
-		return entity, err
-	}
+func (store PostgresStore) GetAllUser() ([]User, error) {
+	users := []User{}
+	err := store.getAllUser.Select(&users)
+	return users, err
+}
 
-	err = store.insertUser.Get(&entity, entity)
+func (store PostgresStore) SaveUser(entity User) (User, error) {
+	err := store.insertUser.Get(&entity, entity)
 	return entity, err
 }
 

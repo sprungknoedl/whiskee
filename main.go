@@ -41,6 +41,8 @@ func main() {
 	r.GET("/home", HomeR)
 	r.GET("/whisky", WhiskyListR)
 	r.GET("/whisky/:id", WhiskyR)
+	r.GET("/user", UserListR)
+	r.GET("/user/:id", UserR)
 
 	r.GET("/add/whisky", AddWhiskyFormR)
 	r.POST("/add/whisky", AddWhiskyR)
@@ -352,6 +354,69 @@ func StoreWhiskyImage(c *gin.Context, whisky Whisky) (Whisky, error) {
 	}
 
 	return whisky, nil
+}
+
+func UserListR(c *gin.Context) {
+	// dependency injection
+	var (
+		userStore = c.MustGet(UserStoreKey).(UserStore)
+		user      = GetUser(c)
+	)
+
+	// get users
+	list, err := userStore.GetAllUser()
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	// transform list into alphabet map
+	users := map[string][]User{}
+	for _, user := range list {
+		group := strings.ToUpper(user.Name[0:1])
+		users[group] = append(users[group], user)
+	}
+
+	c.HTML(http.StatusOK, "users.html", gin.H{
+		"User":  user,
+		"Users": users,
+	})
+}
+
+func UserR(c *gin.Context) {
+	// dependency injection
+	var (
+		whiskyStore = c.MustGet(WhiskyStoreKey).(WhiskyStore)
+		reviewStore = c.MustGet(ReviewStoreKey).(ReviewStore)
+		user        = GetUser(c)
+	)
+
+	// parse id
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	// fetch whiksy
+	whisky, err := whiskyStore.GetWhisky(id)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	// fetch reviews
+	reviews, err := reviewStore.GetAllReviews(id, 30)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.HTML(http.StatusOK, "whisky.html", gin.H{
+		"User":    user,
+		"Whisky":  whisky,
+		"Reviews": reviews,
+	})
 }
 
 func AddReviewR(c *gin.Context) {
